@@ -1,0 +1,79 @@
+# GitHub Release、容器镜像、brew
+DOMAIN,objects.githubusercontent.com
+DOMAIN,release-assets.githubusercontent.com
+DOMAIN,github-cloud.s3.amazonaws.com
+DOMAIN,github-production-release-asset-2e65be.s3.amazonaws.com
+DOMAIN-SUFFIX,ghcr.io
+DOMAIN,pkg-containers.githubusercontent.com
+
+# Docker 镜像
+DOMAIN,auth.docker.io
+DOMAIN,registry-1.docker.io
+DOMAIN,production.cloudflare.docker.com
+DOMAIN,docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com
+
+# Steam 与 Epic 游戏内容
+DOMAIN-SUFFIX,steamcontent.com
+DOMAIN-SUFFIX,steamserver.net
+DOMAIN,client-download.steampowered.com
+DOMAIN,steamcdn-a.akamaihd.net
+DOMAIN,steampipe.akamaized.net
+DOMAIN,steampipe-kr.akamaized.net
+DOMAIN,steampipe-partner.akamaized.net
+DOMAIN,download.epicgames.com
+DOMAIN,epicgames-download1.akamaized.net
+DOMAIN-SUFFIX,egdownload.fastly-edge.com
+
+# Windows、Office 与开发工具更新
+DOMAIN-SUFFIX,windowsupdate.com
+DOMAIN-SUFFIX,update.microsoft.com
+DOMAIN-SUFFIX,delivery.mp.microsoft.com
+DOMAIN,download.visualstudio.microsoft.com
+DOMAIN,officecdn.microsoft.com
+DOMAIN,officecdn-microsoft-com.akamaized.net
+
+# Google 与 Android 下载
+DOMAIN,dl.google.com
+DOMAIN-SUFFIX,gvt1.com
+DOMAIN-SUFFIX,gvt2.com
+
+# Hugging Face 模型文件
+DOMAIN,cdn-lfs.huggingface.co
+DOMAIN,cdn-lfs.hf.co
+DOMAIN-SUFFIX,xethub.hf.co
+
+# JetBrains 安装包与插件
+DOMAIN,download.jetbrains.com
+DOMAIN,download-cdn.jetbrains.com
+DOMAIN,download-cdn.jetbrains.com.cn
+DOMAIN,plugins.jetbrains.com
+DOMAIN,downloads.marketplace.jetbrains.com
+
+# Apple 系统与软件更新
+DOMAIN-SUFFIX,appldnld.apple.com
+DOMAIN-SUFFIX,oscdn.apple.com
+DOMAIN-SUFFIX,swcdn.apple.com
+DOMAIN-SUFFIX,swdist.apple.com
+DOMAIN-SUFFIX,swdownload.apple.com
+DOMAIN-SUFFIX,updates-http.cdn-apple.com
+DOMAIN-SUFFIX,updates.cdn-apple.com
+
+# App Store 应用下载
+DOMAIN,downloaddispatch.itunes.apple.com
+DOMAIN,iosapps.itunes.apple.com
+DOMAIN,iosapps.itunes.g.aaplimg.com
+DOMAIN,osxapps.itunes.apple.com
+DOMAIN,osxapps.itunes.g.aaplimg.com
+DOMAIN,apps.mzstatic.com
+
+# Xcode 与 Apple 开发工具下载
+DOMAIN,download.developer.apple.com
+DOMAIN,devstreaming-cdn.apple.com
+
+
+# Claude AI 下载
+DOMAIN,downloads.claude.ai
+
+
+# Debian iso 下载
+DOMAIN,saimei.ftp.acc.umu.se

@@ -1,0 +1,487 @@
+name: 基于666OS覆写
+desc: 包含策略组、规则集与自定义分流，主要用在主路由
+
+proxy-providers:
+  Sub-store:
+    type: http
+    url: "url"
+    path: ./proxy_provider/provider.yaml
+    proxy: DIRECT
+    interval: 86400
+    # 保留订阅健康检查，用于刷新 provider 节点可用性；间隔不宜过短，避免数百节点拨测导致连接表/CPU 耗尽。
+    health-check:
+      enable: true
+      interval: 200
+      url: https://www.gstatic.com/generate_204
+    override:
+      skip-cert-verify: true
+      udp: true
+
+# ==================== 代理提供者 ====================
+## 注意：请提供您的机场订阅链接，每个链接一行，并为每个机场命名，末尾的[优][备]为每个节点添加机场名称前缀，可自定义
+#proxy-providers:
+#  # 优质订阅源 - 优质节点集合，使用时请修改
+#  优质服务商: {<<: *BaseProvider, url: '优质订阅源地址', override: {additional-prefix: '[优] '}}
+#  # 备用订阅源 - 次优节点集合，使用时请修改
+#  备用服务商: {<<: *BaseProvider, url: '备用订阅源地址', override: {additional-prefix: '[备] '}}
+
+# ==================== 核心配置 ====================
+# 基础配置
+mode: rule
+# HTTP(S) 代理服务器端口
+port: 7890
+# SOCKS5 代理端口
+socks-port: 7891
+# 透明代理端口，用于 Linux 和 macOS
+redir-port: 7892
+# HTTP(S) 和 SOCKS 代理混合端口
+mixed-port: 7893
+# 透明代理端口，用于 Linux TProxy TCP 和 TProxy UDP
+tproxy-port: 7895
+# IPv6 总开关；关闭会阻断所有 IPv6 连接并屏蔽 DNS AAAA 请求
+ipv6: false
+# 允许局域网连接
+allow-lan: true
+unified-delay: true
+# TCP 并发连接所有 IP，将使用最快握手的 TCP
+# 作用：对同一个目标地址，同时尝试多条 TCP 连接路径（例如多个 DNS 解析结果或多个出口），谁先握手成功就用谁。
+tcp-concurrent: true
+# 日志等级：silent/error/warning/info/debug
+log-level: error
+# 绑定 IP 地址，仅作用于 allow-lan 为 true；'*' 表示所有地址
+bind-address: '*'
+# find-process-mode 有 3 个值：always、strict、off
+# - always：强制匹配所有进程
+# - strict：默认，由 Mihomo 判断是否开启
+# - off：不匹配进程，推荐在路由器上使用此模式
+# 作用：让 Mihomo/Clash 尝试识别发起流量的本机进程（读 /proc 等），用于「按进程名/路径分流」这类高级规则。
+find-process-mode: 'off'
+# TCP keep alive 配置
+keep-alive-interval: 15
+keep-alive-idle: 600
+
+# 地理数据库配置
+geox-url:
+  mmdb: https://testingcf.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/Country.mmdb
+  geoip: https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat
+  geosite: https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat
+  asn: https://testingcf.jsdelivr.net/gh/xishang0128/geoip@release/GeoLite2-ASN.mmdb
+geo-auto-update: true
+geo-update-interval: 24
+geodata-mode: true
+
+# 认证配置
+authentication:
+  - mihomo:yyds666
+skip-auth-prefixes:
+  - 127.0.0.1/8
+  - ::1/128
+
+# 实验性功能
+experimental:
+  # 禁用 quic-go GSO 支持，可能降低 Linux 性能；仅建议在遇到 quic-go 内部 GSO 问题时启用，问题解决后应关闭。
+  # 等价于环境变量 QUIC_GO_DISABLE_GSO=1。
+  quic-go-disable-gso: true
+  # 启用 TLS SNI 嗅探，对非标准端口 HTTPS 分流有帮助
+  sniff-tls-sni: true
+
+# 管理面板配置
+#external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip
+#external-ui-name: zashboard
+#external-ui: ui
+#external-controller: 127.0.0.1:9090
+#secret: yyds666
+
+# 配置存储
+profile:
+  # 存储 select 选择记录
+  store-selected: true
+  # 持久化 fake-ip
+  # 关闭可避免 fake-ip 映射长期堆积；路由器重启才恢复时建议关闭
+  store-fake-ip: true
+
+# 流量嗅探 — 识别加密流量中的真实目标域名，提升分流准确性
+sniffer:
+  enable: true
+  # 强制将嗅探到的域名写入 DNS 映射，配合 fake-ip 使用效果更好
+  force-dns-mapping: true
+  # 解析纯 IP 连接的域名，提升 IP 直连和 fake-ip 场景下的分流准确性
+  # 副作用：一些国内流量可能会被误代理链接。比如 aliyun.com 因为没有代理配置，就走了兜底代理
+  parse-pure-ip: true
+  # 全局覆盖目标地址，优先级低于 sniffer.sniff 内的具体配置
+  override-destination: true
+  sniff:
+    # HTTP 嗅探 80/8080-8880 端口（普通 HTTP），以及 443 端口（WebSocket / HTTP CONNECT over TLS）
+    HTTP:
+      ports: [ 80, 443, 8080-8880 ]
+      override-destination: true
+    # TLS 和 QUIC 未配置 ports 时默认嗅探 443
+    TLS:
+      ports: [ 443, 8443 ]
+    QUIC:
+      ports: [ 443, 8443 ]
+  # 对流媒体和云服务强制嗅探域名，提升 fake-ip/IP 连接下的分流准确性
+  force-domain:
+    - "+.netflix.com"
+    - "+.nflxvideo.net"
+    - "+.amazonaws.com"
+    - "+.media.dssott.com"
+  # 跳过 IoT、远控和推送类域名嗅探，降低误嗅探导致异常的概率
+  skip-domain:
+    - "Mijia Cloud"
+    - "dlg.io.mi.com"
+    - "+.oray.com"
+    - "+.sunlogin.net"
+    - "+.push.apple.com"
+  skip-src-address:
+    - 192.168.0.0/16
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+
+# TUN模式配置（保守增强版）
+tun:
+  enable: true
+  # TUN 网络栈类型：system/gvisor/mixed
+  stack: mixed
+  # 最大传输单元
+  mtu: 1492
+  # 需要劫持的 DNS
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  # 配置路由表
+  auto-route: false
+  # 自动配置 iptables 以重定向 TCP 连接，仅支持 Linux
+  auto-redirect: false
+  # 自动识别出口网卡
+  auto-detect-interface: false
+
+# DNS配置（保守增强版）
+dns:
+  # 关闭将使用系统 DNS
+  enable: true
+  # 开启 DNS 服务器监听
+  listen: 0.0.0.0:7874
+  cache-algorithm: arc
+  # false 将返回 AAAA 的空结果
+  ipv6: false
+  # 是否开启 DoH 支持 HTTP/3，将并发尝试；强烈不建议和 respect-rules 一起使用
+  prefer-h3: false
+  # 查询 hosts
+  use-hosts: true
+  use-system-hosts: true
+  # 配置后面的 nameserver、fallback 和 nameserver-policy 向 DNS 服务器的连接过程是否遵守 rules 规则。
+  # 如果为 false（默认值），这三部分的 DNS 服务器在未特别指定的情况下会直连。
+  # 如果为 true，将按照 rules 的规则匹配连接方式（走代理或直连）；如果有特别指定，则仍以指定值为准。
+  # 仅当 proxy-server-nameserver 非空时可以开启；此外 DNS 服务器如果出现域名，会采用 default-nameserver 解析。
+  # 解析某个域名时也会走一遍分流规则，再决定用哪条 DNS 路径（直连上游、带 #直接连接 的 nameserver，或经代理解析等）。
+  respect-rules: true
+  # DNS 增强模式：fake-ip 或 redir-host
+  enhanced-mode: fake-ip
+  # fake-ip 池设置
+  fake-ip-range: 198.18.0.1/16
+  # fake-ip6 池设置
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  # fake-ip-filter 匹配模式；blacklist 表示匹配成功不返回 fake-ip
+  fake-ip-filter-mode: blacklist
+  # 用于解析 nameserver、fallback 以及其他 DNS 服务器配置里的 DNS 服务域名；只能使用纯 IP 地址，可使用加密 DNS。
+  default-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  # 专用于节点域名解析的 DNS 服务器；如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置。
+  # 用于解析代理服务器域名，避免 respect-rules 启用后 DNS 解析依赖代理产生循环。
+  proxy-server-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  # 国内和自定义直连规则在 DNS 阶段使用国内 DoH，避免真实 IP 域名拿到海外 CDN。
+  nameserver-policy:
+    "rule-set:China":
+      - "https://dns.alidns.com/dns-query#直接连接"
+      - "https://doh.pub/dns-query#直接连接"
+    "rule-set:Direct":
+      - "https://dns.alidns.com/dns-query#直接连接"
+      - "https://doh.pub/dns-query#直接连接"
+    "rule-set:Myself_Direct_Domain":
+      - "https://dns.alidns.com/dns-query#直接连接"
+      - "https://doh.pub/dns-query#直接连接"
+  # DNS 主要域名配置；支持 UDP、TCP、DoT、DoH、DoQ。
+  # 普通解析走代理侧海外 DoH，避免非直连域名暴露到本地运营商递归。
+  nameserver:
+    - "https://1.1.1.1/dns-query#默认代理"
+    - "https://8.8.8.8/dns-query#默认代理"
+  # 专用于 direct 出口域名解析的 DNS 服务器；如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置。
+  # 命中直连规则时仍使用国内 DNS，保留国内站点和 CDN 解析质量。
+  direct-nameserver:
+    - "https://dns.alidns.com/dns-query#直接连接"
+    - "https://doh.pub/dns-query#直接连接"
+  # direct-nameserver 是否遵循 nameserver-policy，仅当 direct-nameserver 不为空时生效。
+  direct-nameserver-follow-policy: true
+  # 当配置 fallback 时，会查询 nameserver 返回的 IP 是否为 CN；不是 CN 时使用 fallback 的 DNS 查询结果。
+  fallback:
+    - "https://1.1.1.1/dns-query#默认代理"
+    - "https://8.8.8.8/dns-query#默认代理"
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+  # 配置不使用 fake-ip 的域名；rule-set 项要求对应 rule-provider 的 behavior 为 domain/classical。
+  fake-ip-filter:
+    - rule-set:Direct
+    - rule-set:Private
+    - rule-set:China
+    - "*.lan"
+    - "*.local"
+    - +.localdomain
+    - localhost.ptlogin2.qq.com
+    - time.windows.com
+    - time.apple.com
+    - time.android.com
+    - +.miwifi.com
+    - +.docker.io
+    - +.market.xiaomi.com
+    - +.push.apple.com
+    - +.tailscale.com
+    - +.991886.xyz
+
+
+
+# 节点筛选正则表达式 - 基于地理位置和关键词过滤
+FilterHK: &FilterHK '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
+FilterHKFlower: &FilterHKFlower '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*Flower)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|Test)).*$'
+FilterSelfSGLegend: &FilterSelfSGLegend '^(?=.*自建)(?=.*SG)(?=.*legend)(?!.*(测试|备用|Traffic|Test|链式落地)).*$'
+FilterSelfSGUzuma: &FilterSelfSGUzuma '^(?=.*自建)(?=.*SG)(?=.*uzuma)(?!.*(测试|备用|Traffic|Test|链式落地)).*$'
+FilterHKLXY: &FilterHKLXY '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*LXY)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
+FilterSG: &FilterSG '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
+FilterJP: &FilterJP '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
+FilterUS: &FilterUS '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
+FilterTrafficAuto: &FilterTrafficAuto '^(?=.*(?i)(实验性|实验|测试|Test|Traffic|流量))(?!.*(?i)(落地|微林|ix|中转)).*$'
+FilterTraffic: &FilterTraffic '^(?=.*(?i)(实验性|实验|测试|Test|Traffic|流量|temp))(?!.*(?i)(落地|微林|ix|中转)).*$'
+#FilterChainLanding: &FilterChainLanding '^(?=.*自建)(?=.*SG)(?!.*(测试|备用|Traffic|Test)).*$'
+FilterSelfSG: &FilterSelfSG '^(?=.*自建)(?=.*SG)(?!.*(测试|备用|Traffic|Test|链式落地)).*$'
+# FilterOT = Filter Other，其他地区节点过滤器。
+# 翻译：Filter Other = 过滤其他；排除常见国家/地区关键词后，保留冷门或未归类节点。
+FilterOT: &FilterOT '^(?!.*(DIRECT|直接连接|美|港|坡|台|新|日|韩|奥|比|保|克罗地亚|塞|捷|丹|爱沙|芬|法|德|希|匈|爱尔|意|拉|立|卢|马其它|荷|波|葡|罗|斯洛伐|斯洛文|西|瑞|英|🇭🇰|🇼🇸|🇹🇼|🇸🇬|🇯🇵|🇰🇷|🇺🇸|🇬🇧|🇦🇹|🇧🇪|🇨🇿|🇩🇰|🇫🇮|🇫🇷|🇩🇪|🇮🇪|🇮🇹|🇱🇹|🇱🇺|🇳🇱|🇵🇱|🇸🇪|HK|TW|SG|JP|KR|US|GB|CDG|FRA|AMS|MAD|BCN|FCO|MUC|BRU|HKG|TPE|TSA|KHH|SIN|XSP|NRT|HND|KIX|CTS|FUK|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD|LHR|LGW))'
+# FilterAL = Filter All，全部可用节点过滤器。
+# 翻译：Filter All = 过滤全部；排除订阅信息、官网、流量、到期等非节点条目。
+FilterAL: &FilterAL '^(?!.*(DIRECT|直接连接|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|链式落地|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author))'
+
+
+# 策略组
+# =========================================
+#             策略组配置
+# =========================================
+
+# 策略组类型模板 - 定义不同的策略组基础配置
+BaseFB: &BaseFB { type: fallback, interval: 200, lazy: true, url: 'https://www.gstatic.com/generate_204' }
+# BaseUT = Base URL-Test，基础自动测速模板。
+# 翻译：Base URL-Test = 基础 URL 测速；用于自动选择延迟最低的节点。
+BaseUT: &BaseUT { type: url-test, interval: 200, lazy: true, url: 'https://www.gstatic.com/generate_204', hidden: true }
+
+
+#  一致性哈希。（用不到）
+#  同一个目标地址/连接特征通常会被分配到同一个节点。
+#BaseCH: &BaseCH { type: load-balance, interval: 200, lazy: true, url: 'https://www.google.com/generate_204', strategy: consistent-hashing, hidden: true }
+#  轮询。（用不到）
+#  新连接按顺序轮流分配到不同节点。
+#BaseCR: &BaseCR { type: load-balance, interval: 200, lazy: true, url: 'https://www.google.com/generate_204', strategy: round-robin, hidden: true }
+
+
+# 策略组代理列表模板 - 预定义的代理节点优先级排序
+# SelectFB = Select Fallback，保留故障转移作为兜底的手动选择模板。
+# 翻译：Select Fallback = 选择故障转移；默认优先使用高频地区策略，故障转移只作为兜底。
+SelectFB: &SelectFB { type: select, proxies: [ 香港策略, 狮城策略, 日本策略, 美国策略, 故障转移, 流量节点, 自建节点, 冷门自选, 全球手动, 直接连接 ] }
+# SelectPY = Select Proxy，代理优先的手动选择模板。
+# 翻译：Select Proxy = 选择代理；默认把“默认代理”放在第一位。
+SelectPY: &SelectPY { type: select, proxies: [ 默认代理, 故障转移, 流量节点, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ] }
+# SelectDC = Select Direct Connection，直连优先的手动选择模板。
+# 翻译：Select Direct Connection = 选择直接连接；默认把“直接连接”放在第一位。
+SelectDC: &SelectDC { type: select, proxies: [ 直接连接, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动 ] }
+
+
+
+
+
+# ==================== 代理策略组 ====================
+proxy-groups: #!replace
+  # ==================== 主要策略组 ====================
+  - { name: 默认代理,     <<: *SelectFB, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Static.png" }
+  - { name: 故障转移,     <<: *BaseFB, proxies: [ 香港策略, 狮城策略, 日本策略, 美国策略, 流量节点, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/ULB.png" }
+  - { name: 国外流量,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png" }
+  - { name: 国内流量,     <<: *SelectDC, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png" }
+  - { name: 兜底流量,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png" }
+  - { name: 直接连接,     type: select, proxies: [ DIRECT ], hidden: true, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Direct.png" }
+
+  # ==================== 功能策略组 ====================
+  - { name: 网络测试,     type: select, include-all: true, filter: *FilterAL, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Speedtest.png" }
+  - { name: 广告策略,     type: select, proxies: [ REJECT, 默认代理, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AdBlack.png" }
+  - { name: 代理下载,     type: select, proxies: [ 流量节点, 默认代理, 全球手动, 直接连接 ] }
+  #  - { name: 抖快书定位,   type: select, proxies: [ 直接连接, 香港策略, 狮城策略, 日本策略, 美国策略 ], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png }
+
+  # ==================== 媒体服务 ====================
+  #  - { name: Emby服,      <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png }
+  - { name: 油管视频,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png" }
+  #  - { name: 奈飞视频,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Netflix.png }
+  #  - { name: 国际媒体,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png }
+  #  - { name: 新闻媒体,     <<: *SelectUS, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple_News.png }
+
+  # ==================== 社交平台 ====================
+  - { name: 电报消息,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Telegram_X.png" }
+  - { name: 推特社交,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/X.png" }
+  - { name: Tiktok,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png" }
+
+  # ==================== 商业服务 ====================
+  - { name: 人工智能,     type: select, proxies: [ 自建SG, 狮城策略, 全球手动 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
+  - { name: 个人特殊分组, <<: *SelectPY }
+  - { name: JetBrains,  type: select, proxies: [ 默认代理, 自建SG, 狮城策略, 香港策略, 美国策略, 日本策略, 自建节点, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/JetBrains.png" }
+  - { name: 货币平台,     <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
+  - { name: 谷歌服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
+  - { name: 苹果服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
+
+  # ==================== 地区策略组 ====================
+  # 香港策略按供应商依次故障转移，优先 Flower，故障时切换至 LXY。
+  - { name: 香港策略,     <<: *BaseFB, proxies: [ 香港自动Flower, 香港自动LXY ], include-all: true, filter: *FilterHK, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png" }
+  - { name: 狮城策略,     type: select, proxies: [ 狮城自动 ], include-all: true, filter: *FilterSG, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png" }
+  - { name: 日本策略,     type: select, proxies: [ 日本自动 ], include-all: true, filter: *FilterJP, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png" }
+  - { name: 美国策略,     type: select, proxies: [ 美国自动 ], include-all: true, filter: *FilterUS, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png" }
+
+  # ==================== 自建策略组 ====================
+  - { name: 自建SG,  type: select, proxies: [ 自建SG Legend, 自建SG Uzuma ], include-all: true, filter: *FilterSelfSG }
+  - { name: 自建节点, type: select, include-all: true, filter: '^(?=.*(?i)(自建|落地|微林))(?!.*链式落地).*$' }
+  - { name: 流量节点, type: select, proxies: [ 流量节点自动, 香港自动LXY ], include-all: true, filter: *FilterTraffic }
+  - { name: 前置节点, type: select, proxies: [ 香港策略, 狮城策略, 日本策略, 美国策略, 直接连接 ], include-all: true, filter: '^(?=.*自建)(?!.*(?i)(ix|中转|uzuma|落地)).*$' }
+
+  # ==================== 其他策略组 ====================
+  - { name: 冷门自选,     type: select, include-all: true, filter: *FilterOT, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Europe_Map.png" }
+  - { name: 全球手动,     type: select, include-all: true, filter: *FilterAL, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Clubhouse.png" }
+
+  # ==================== 自动测速组 ====================
+  # 香港节点按供应商前缀拆分，避免两个机场的节点参与同一个测速组。
+  - { name: 香港自动Flower, <<: *BaseUT, include-all: true, filter: *FilterHKFlower, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 香港自动LXY,    <<: *BaseUT, include-all: true, filter: *FilterHKLXY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 狮城自动,     <<: *BaseUT, include-all: true, filter: *FilterSG, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 日本自动,     <<: *BaseUT, include-all: true, filter: *FilterJP, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 美国自动,     <<: *BaseUT, include-all: true, filter: *FilterUS, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 流量节点自动, <<: *BaseUT, interval: 60, tolerance: 50, lazy: false, max-failed-times: 1, timeout: 2000, expected-status: 204, include-all: true, filter: *FilterTrafficAuto, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 自建SG Legend, <<: *BaseUT, include-all: true, filter: *FilterSelfSGLegend, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 自建SG Uzuma, <<: *BaseUT, include-all: true, filter: *FilterSelfSGUzuma, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+
+# ==================== 规则路由 ====================
+# 备注：优先走 rules 里从上到下第一个命中的策略。
+rules:
+  # 拦截规则
+  - RULE-SET,Tracking,广告策略
+  - RULE-SET,Advertising,广告策略
+  - RULE-SET,AdvertisingCN,广告策略
+  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((GEOIP,CN)))),REJECT  # 阻止海外 QUIC
+  - AND,((NETWORK,UDP),(DST-PORT,41641)),直接连接  # Tailscale WireGuard
+
+  # 域名规则
+  #  - RULE-SET,LocationDKS,抖快书定位
+  - RULE-SET,Private,直接连接
+  - RULE-SET,Myself_Proxy_Domain,国外流量
+  - RULE-SET,Direct,直接连接
+  - RULE-SET,Myself_Direct_Domain,直接连接
+  - RULE-SET,XPTV,直接连接
+  - RULE-SET,Myself_Download_Domain,代理下载
+  - RULE-SET,Download,直接连接
+  - RULE-SET,AppleCN,直接连接
+  - RULE-SET,Myself_AI_Domain,人工智能
+  - RULE-SET,category-ai,人工智能
+  - DOMAIN-KEYWORD,speedtest,网络测试
+  - RULE-SET,Speedtest,网络测试
+  - RULE-SET,Myself_IP_Detection,网络测试
+  - RULE-SET,Tiktok,Tiktok
+  - RULE-SET,Twitter,推特社交
+  - RULE-SET,Telegram,电报消息
+  #  - RULE-SET,NewsMedia,新闻媒体
+  - RULE-SET,Myself_Crypto_Domain,货币平台
+  - RULE-SET,Crypto,货币平台
+  #  - RULE-SET,Emby,Emby服
+  #  - RULE-SET,Netflix,奈飞视频
+  - RULE-SET,YouTube,油管视频
+  #  - RULE-SET,Streaming,国际媒体
+  - RULE-SET,Apple,苹果服务
+  - RULE-SET,Google,谷歌服务
+  - RULE-SET,JetBrains,JetBrains
+  - GEOSITE,geolocation-!cn,国外流量
+  - RULE-SET,China,国内流量
+
+  # IP规则
+  - IP-CIDR,18.221.15.194/32,个人特殊分组,no-resolve
+  - RULE-SET,AdvertisingIP,广告策略,no-resolve
+  - RULE-SET,Myself_Direct_IP,直接连接,no-resolve
+  - RULE-SET,PrivateIP,直接连接,no-resolve
+  - RULE-SET,XPTVIP,直接连接,no-resolve
+  - RULE-SET,AIIP,人工智能,no-resolve
+  - RULE-SET,TelegramIP,电报消息,no-resolve
+  #  - RULE-SET,EmbyIP,Emby服,no-resolve
+  #  - RULE-SET,NetflixIP,奈飞视频,no-resolve
+  #  - RULE-SET,StreamingIP,国际媒体,no-resolve
+  - RULE-SET,GoogleIP,谷歌服务,no-resolve
+  - GEOIP,!CN,国外流量,no-resolve
+  - RULE-SET,ChinaIP,国内流量,no-resolve
+
+  # 兜底规则
+  - MATCH,兜底流量
+
+
+# ==================== 规则集 ====================
+# 规则集行为模板
+BehaviorDN: &BehaviorDN { type: http, behavior: domain, format: mrs, interval: 86400 }
+BehaviorClassicalText: &BehaviorClassicalText { type: http, behavior: classical, format: text, interval: 86400 }
+BehaviorIP: &BehaviorIP { type: http, behavior: ipcidr, format: mrs, interval: 86400 }
+BehaviorIPText: &BehaviorIPText { type: http, behavior: ipcidr, format: text, interval: 86400 }
+
+# 规则提供者
+rule-providers:
+  # 域名规则
+  Tracking: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs" }
+  AdvertisingCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomolite.mrs" }
+  Advertising: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomo.mrs" }
+  Direct: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs" }
+  LocationDKS: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/LocationDKS.mrs" }
+  Private: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs" }
+  Download: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Download/Download.list" }
+  Speedtest: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/speedtest.mrs" }
+  Telegram: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs" }
+  Twitter: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs" }
+  SocialMedia: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-social-media-!cn.mrs" }
+  NewsMedia: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/NewsMedia.mrs" }
+  Crypto: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.list" }
+  Netflix: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs" }
+  YouTube: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs" }
+  XPTV: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/XPTV.mrs" }
+  Emby: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Emby/Emby.list" }
+  Streaming: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GlobalMedia/GlobalMedia.list" }
+  # TikTok 源文件为 Clash YAML，需使用 classical/yaml 格式解析。
+  Tiktok: { type: http, behavior: classical, format: yaml, interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/TikTok/TikTok.yaml" }
+  AppleCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs" }
+  Apple: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs" }
+  Google: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs" }
+  Facebook: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/facebook.mrs" }
+  China: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs" }
+  Myself_Direct_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Direct_Domain.list" }
+  Myself_Proxy_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Proxy_Domain.list" }
+  Myself_IP_Detection: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_IP_Detection.list" }
+  Myself_Crypto_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Crypto_Domain.list" }
+  Myself_AI_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_AI_Domain.list" }
+  Myself_Download_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Download_Domain.list" }
+  category-ai: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
+  JetBrains: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Jetbrains/Jetbrains.list" }
+  PayPal: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs" }
+
+  # IP规则
+  AdvertisingIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Advertising.mrs" }
+  Myself_Direct_IP: { <<: *BehaviorIPText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Direct_IP.list" }
+  PrivateIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs" }
+  AIIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/AI.mrs" }
+  TelegramIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs" }
+  XPTVIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/XPTV.mrs" }
+  EmbyIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Emby.mrs" }
+  NetflixIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs" }
+  StreamingIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Streaming.mrs" }
+  GoogleIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs" }
+  FacebookIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs" }
+  ChinaIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs" }
+# ==================== EOF ====================
