@@ -1,0 +1,16 @@
+DOMAIN-SUFFIX,xingwenzn.com
+DOMAIN-SUFFIX,api-huacloud.dev
+DOMAIN-SUFFIX,api.xmancdn.com
+DOMAIN-SUFFIX,nadula.com
+DOMAIN-SUFFIX,unice.com
+
+# Tailscale
+DOMAIN-SUFFIX,tailscale.com
+DOMAIN-SUFFIX,ts.net
+DOMAIN-SUFFIX,aliyun.com
+DOMAIN-SUFFIX,invite.linuxdo.org
+
+# 自建节点域名
+DOMAIN-SUFFIX,991886.xyz
+DOMAIN-SUFFIX,moonshot.ai
+DOMAIN-SUFFIX,vmos.pro
