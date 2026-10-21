@@ -1,0 +1,5 @@
+# 单条规则无需且不应携带策略组后缀
+DOMAIN,v1.uhdnow.com
+DOMAIN,v1-vod1.uhdnow.com
+DOMAIN,v1-vod2.uhdnow.com
+DOMAIN-SUFFIX,hxdemby.com
