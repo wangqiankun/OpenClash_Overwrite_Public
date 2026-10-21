@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "source_revision": "09694b0e5b636740df5f599b1ae0b92ae95e3f9c",
+  "files": {
+    "Yaml/666OS-DNS-Conf.yaml": "d70dc7d1bf4c7c82f8bfb0d61b61cfc15483207815a54c251f91c5a717b7da27",
+    "Overwrite/666OS-dns.conf": "84361f881b2e47e4cdb4440feb5e3f30d6b5fce6b371850e3909cb2aea408348",
+    "Rules/Myself_AI_Domain.list": "3745d5919c37739d2fa884927c7d67fa7b705167c21f4f4b4463938795ca31f9",
+    "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",
+    "Rules/Myself_Direct_Domain.list": "7c44b0c4b9a8f219c74478194413368b3b58b09cadbb1ca93c000d29f35ffd78",
+    "Rules/Myself_Direct_IP.list": "52c45ab52d9b7539ae3ce76b12ee8345d43794d186e9c0617a28c0d3ec602857",
+    "Rules/Myself_Download_Domain.list": "cf87fac27dcc08d09273d847bfbf9fe4d2f00f12cb7a87d518db7e98a5a7a796",
+    "Rules/Myself_Emby_Domain.list": "a67305a527a706998d3b9336567df5aa5fd1d583b685273f9f46a06b3383663b",
+    "Rules/Myself_IP_Detection.list": "8adfce31ccfd3bef3f704d0838f9185ecfb2f26d4d94201f33f250781aec7b1d",
+    "Rules/Myself_Proxy_Domain.list": "f1caa5e91184c417ad2a098b5f818b48fb279a909cb36871c2fe4212b15ecc21",
+    "Scripts/stash-traffic-collector.js": "ebd0d658967ab665499ebedfce902db3ee4b85d7cc96c29182b83778c3552bd2",
+    "README.md": "df0af478d95a953ded34a3106aef201115ac34788789d54781b352a173ea6c48"
+  }
+}
