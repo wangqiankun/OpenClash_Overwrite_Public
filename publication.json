@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source_revision": "937ad9530757350235e025cc284a3b49a790e685",
+  "source_revision": "f455f3edc67afb341edf80905bef1a2796b57828",
   "files": {
     "Yaml/666OS-DNS-Conf.yaml": "d70dc7d1bf4c7c82f8bfb0d61b61cfc15483207815a54c251f91c5a717b7da27",
     "Overwrite/666OS-dns.conf": "84361f881b2e47e4cdb4440feb5e3f30d6b5fce6b371850e3909cb2aea408348",
@@ -13,6 +13,6 @@
     "Rules/Myself_IP_Detection.list": "8adfce31ccfd3bef3f704d0838f9185ecfb2f26d4d94201f33f250781aec7b1d",
     "Rules/Myself_Proxy_Domain.list": "f1caa5e91184c417ad2a098b5f818b48fb279a909cb36871c2fe4212b15ecc21",
     "Scripts/stash-traffic-collector.js": "ebd0d658967ab665499ebedfce902db3ee4b85d7cc96c29182b83778c3552bd2",
-    "README.md": "df0af478d95a953ded34a3106aef201115ac34788789d54781b352a173ea6c48"
+    "README.md": "9edac05e42d909149cf4a20cf1766f24c6f70cb5ade4a4a1f1fc322a88d434da"
   }
 }
