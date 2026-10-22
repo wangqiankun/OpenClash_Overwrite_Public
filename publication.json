@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source_revision": "7543a504e9e82d0ccfe8b0aedd50aad1de4cec8e",
+  "source_revision": "e1927bee89498b30355b7d03bd087195cd1f7ef9",
   "files": {
     "Yaml/666OS-DNS-Conf.yaml": "d70dc7d1bf4c7c82f8bfb0d61b61cfc15483207815a54c251f91c5a717b7da27",
     "Overwrite/666OS-dns.conf": "84361f881b2e47e4cdb4440feb5e3f30d6b5fce6b371850e3909cb2aea408348",
@@ -8,7 +8,7 @@
     "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",
     "Rules/Myself_Direct_Domain.list": "7c44b0c4b9a8f219c74478194413368b3b58b09cadbb1ca93c000d29f35ffd78",
     "Rules/Myself_Direct_IP.list": "52c45ab52d9b7539ae3ce76b12ee8345d43794d186e9c0617a28c0d3ec602857",
-    "Rules/Myself_Download_Domain.list": "cf87fac27dcc08d09273d847bfbf9fe4d2f00f12cb7a87d518db7e98a5a7a796",
+    "Rules/Myself_Download_Domain.list": "0fdc07576563bb99beed0b0fccc6c97b3893b1d3805e615dff3b4179037e3b09",
     "Rules/Myself_Emby_Domain.list": "a67305a527a706998d3b9336567df5aa5fd1d583b685273f9f46a06b3383663b",
     "Rules/Myself_IP_Detection.list": "8adfce31ccfd3bef3f704d0838f9185ecfb2f26d4d94201f33f250781aec7b1d",
     "Rules/Myself_Proxy_Domain.list": "f1caa5e91184c417ad2a098b5f818b48fb279a909cb36871c2fe4212b15ecc21",

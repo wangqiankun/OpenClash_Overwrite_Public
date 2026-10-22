@@ -83,3 +83,5 @@ DOMAIN,persistent.oaistatic.com
 DOMAIN,saimei.ftp.acc.umu.se
 
 DOMAIN-SUFFIX,figma.com
+
+DOMAIN,storage.googleapis.com
