@@ -1,17 +1,17 @@
 {
   "version": 1,
-  "source_revision": "6eb501cea0211c84630138e94e5b3e38cfe03067",
+  "source_revision": "7a5243df9d2e3f5c07ec314727e29b5028c2dbf9",
   "files": {
-    "Yaml/666OS-DNS-Conf.yaml": "d70dc7d1bf4c7c82f8bfb0d61b61cfc15483207815a54c251f91c5a717b7da27",
+    "Yaml/666OS-DNS-Conf.yaml": "790b7e0738e373c6dd6252a86083b00474f5494504f0034fe018f932f66ec296",
     "Overwrite/666OS-dns.conf": "84361f881b2e47e4cdb4440feb5e3f30d6b5fce6b371850e3909cb2aea408348",
     "Rules/Myself_AI_Domain.list": "3745d5919c37739d2fa884927c7d67fa7b705167c21f4f4b4463938795ca31f9",
     "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",
-    "Rules/Myself_Direct_Domain.list": "7c44b0c4b9a8f219c74478194413368b3b58b09cadbb1ca93c000d29f35ffd78",
-    "Rules/Myself_Direct_IP.list": "52c45ab52d9b7539ae3ce76b12ee8345d43794d186e9c0617a28c0d3ec602857",
+    "Rules/Myself_Direct_Domain.list": "eaf5c1842a4e526e6aeb1cfd10032d428a3e806cccbb694cc0ca00fe10e0ce85",
+    "Rules/Myself_Direct_IP.list": "422e27bb26f4e3c905f63145116d2eb2a76991694fa06accd227ac8005fbcedf",
     "Rules/Myself_Download_Domain.list": "0fdc07576563bb99beed0b0fccc6c97b3893b1d3805e615dff3b4179037e3b09",
     "Rules/Myself_Emby_Domain.list": "a67305a527a706998d3b9336567df5aa5fd1d583b685273f9f46a06b3383663b",
     "Rules/Myself_IP_Detection.list": "8adfce31ccfd3bef3f704d0838f9185ecfb2f26d4d94201f33f250781aec7b1d",
-    "Rules/Myself_Proxy_Domain.list": "f1caa5e91184c417ad2a098b5f818b48fb279a909cb36871c2fe4212b15ecc21",
+    "Rules/Myself_Proxy_Domain.list": "2f947d73899223e1118cf933f95a483b2238cfeafee9e2d098c96d5f52bd04b1",
     "Scripts/stash-traffic-collector.js": "ebd0d658967ab665499ebedfce902db3ee4b85d7cc96c29182b83778c3552bd2",
     "README.md": "9edac05e42d909149cf4a20cf1766f24c6f70cb5ade4a4a1f1fc322a88d434da"
   }

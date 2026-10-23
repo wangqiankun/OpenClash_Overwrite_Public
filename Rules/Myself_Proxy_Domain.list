@@ -12,3 +12,13 @@ DOMAIN-SUFFIX,eggvps.com
 DOMAIN-SUFFIX,v2ex.com
 DOMAIN-SUFFIX,tanzhen.991886.xyz
 DOMAIN-SUFFIX,substore.991886.xyz
+# ai 中转站
+DOMAIN-SUFFIX,dragoncode.codes
+
+DOMAIN-SUFFIX,app-measurement.com
+
+# GA 避免走广告拦截
+DOMAIN-SUFFIX,google-analytics.com
+DOMAIN,analytics.google.com
+DOMAIN,firebaselogging-pa.googleapis.com
+DOMAIN-SUFFIX,googletagmanager.com

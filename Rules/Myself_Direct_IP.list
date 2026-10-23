@@ -6,3 +6,6 @@ fd7a:115c:a1e0::/48
 
 # Custom Direct IPv4
 138.252.162.95/32
+
+# longqi gitlab
+18.221.15.194/32

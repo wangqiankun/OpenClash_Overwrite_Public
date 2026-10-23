@@ -329,8 +329,7 @@ proxy-groups: #!replace
   - { name: Tiktok,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png" }
 
   # ==================== 商业服务 ====================
-  - { name: 人工智能,     type: select, proxies: [ 自建SG, 狮城策略, 全球手动 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
-  - { name: 个人特殊分组, <<: *SelectPY }
+  - { name: 人工智能,     type: select, proxies: [ 自建SG, 自建节点, 狮城策略, 全球手动 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
   - { name: JetBrains,  type: select, proxies: [ 默认代理, 自建SG, 狮城策略, 香港策略, 美国策略, 日本策略, 自建节点, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/JetBrains.png" }
   - { name: 货币平台,     <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
   - { name: 谷歌服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
@@ -367,47 +366,38 @@ proxy-groups: #!replace
 # 备注：优先走 rules 里从上到下第一个命中的策略。
 rules:
   # Firebase Analytics 与 Google Tag Manager 上报走谷歌服务，避免被后续拦截规则拒绝。
-  - DOMAIN-SUFFIX,app-measurement.com,谷歌服务
-  - DOMAIN-SUFFIX,google-analytics.com,谷歌服务
-  - DOMAIN,analytics.google.com,谷歌服务
-  - DOMAIN,firebaselogging-pa.googleapis.com,谷歌服务
-  - DOMAIN-SUFFIX,googletagmanager.com,谷歌服务
-  - DOMAIN-SUFFIX,jiguang.cn,国内流量
-  - DOMAIN-SUFFIX,jpush.cn,国内流量
-
+  - RULE-SET,Myself_Direct_Domain,直接连接
+  - RULE-SET,Myself_AI_Domain,人工智能
+  - RULE-SET,Myself_Proxy_Domain,国外流量
+  - RULE-SET,Myself_Download_Domain,流量节点
+  - RULE-SET,Myself_Emby_Domain,Emby服
+  - RULE-SET,Myself_IP_Detection,网络测试
+  - RULE-SET,Myself_Crypto_Domain,货币平台
+  - RULE-SET,Myself_Direct_IP,直接连接,no-resolve
   # 拦截规则
   - RULE-SET,Tracking,广告策略
   - RULE-SET,Advertising,广告策略
   - RULE-SET,AdvertisingCN,广告策略
-#  - ; 2026-10-10 测试使用udp，关闭这个这个选项
-#  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((GEOIP,CN)))),REJECT  # 阻止海外 QUIC
-#  - AND,((NETWORK,UDP),(DST-PORT,41641)),直接连接  # Tailscale WireGuard
+  #  - ; 2026-10-10 测试使用udp，关闭这个这个选项
+  #  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((GEOIP,CN)))),REJECT  # 阻止海外 QUIC
+  #  - AND,((NETWORK,UDP),(DST-PORT,41641)),直接连接  # Tailscale WireGuard
 
   # 域名规则
   #  - RULE-SET,LocationDKS,抖快书定位
   - RULE-SET,Private,直接连接
-  # 个人特殊域名使用独立策略组，优先于通用代理规则命中。
-  - DOMAIN-SUFFIX,dragoncode.codes,个人特殊分组
-  - RULE-SET,Myself_Proxy_Domain,国外流量
   - RULE-SET,Direct,直接连接
-  - RULE-SET,Myself_Direct_Domain,直接连接
   - RULE-SET,XPTV,直接连接
-  - RULE-SET,Myself_Download_Domain,流量节点
-  - RULE-SET,Myself_Emby_Domain,Emby服
   - RULE-SET,Download,直接连接
   - RULE-SET,AppleCN,直接连接
-  - RULE-SET,Myself_AI_Domain,人工智能
   - RULE-SET,category-ai,人工智能
   - DOMAIN-KEYWORD,speedtest,网络测试
   - RULE-SET,Speedtest,网络测试
-  - RULE-SET,Myself_IP_Detection,网络测试
   - RULE-SET,Tiktok,Tiktok
   - RULE-SET,Twitter,推特社交
   - RULE-SET,TelegramClash,电报消息
   - RULE-SET,TelegramLoon,电报消息
   - RULE-SET,Telegram,电报消息
   #  - RULE-SET,NewsMedia,新闻媒体
-  - RULE-SET,Myself_Crypto_Domain,货币平台
   - RULE-SET,Crypto,货币平台
   - RULE-SET,Emby,Emby服
   #  - RULE-SET,Netflix,奈飞视频
@@ -420,9 +410,7 @@ rules:
   - RULE-SET,China,国内流量
 
   # IP规则
-  - IP-CIDR,18.221.15.194/32,个人特殊分组,no-resolve
   - RULE-SET,AdvertisingIP,广告策略,no-resolve
-  - RULE-SET,Myself_Direct_IP,直接连接,no-resolve
   - RULE-SET,PrivateIP,直接连接,no-resolve
   - RULE-SET,XPTVIP,直接连接,no-resolve
   - RULE-SET,AIIP,人工智能,no-resolve
