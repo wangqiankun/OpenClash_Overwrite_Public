@@ -257,7 +257,6 @@ FilterUS: &FilterUS '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|
 FilterTrafficAuto: &FilterTrafficAuto '^(?=.*(?i)(实验性|实验|测试|Test|Traffic|流量))(?!.*(?i)(落地|微林|ix|中转)).*$'
 FilterTraffic: &FilterTraffic '^(?=.*(?i)(实验性|实验|测试|Test|Traffic|流量|temp))(?!.*(?i)(落地|微林|ix|中转)).*$'
 #FilterChainLanding: &FilterChainLanding '^(?=.*自建)(?=.*SG)(?!.*(测试|备用|Traffic|Test)).*$'
-FilterSelfSG: &FilterSelfSG '^(?=.*自建)(?=.*SG)(?=.*legend)(?!.*(测试|备用|Traffic|Test|链式落地)).*$'
 # FilterOT = Filter Other，其他地区节点过滤器。
 # 翻译：Filter Other = 过滤其他；排除常见国家/地区关键词后，保留冷门或未归类节点。
 FilterOT: &FilterOT '^(?!.*(DIRECT|直接连接|美|港|坡|台|新|日|韩|奥|比|保|克罗地亚|塞|捷|丹|爱沙|芬|法|德|希|匈|爱尔|意|拉|立|卢|马其它|荷|波|葡|罗|斯洛伐|斯洛文|西|瑞|英|🇭🇰|🇼🇸|🇹🇼|🇸🇬|🇯🇵|🇰🇷|🇺🇸|🇬🇧|🇦🇹|🇧🇪|🇨🇿|🇩🇰|🇫🇮|🇫🇷|🇩🇪|🇮🇪|🇮🇹|🇱🇹|🇱🇺|🇳🇱|🇵🇱|🇸🇪|HK|TW|SG|JP|KR|US|GB|CDG|FRA|AMS|MAD|BCN|FCO|MUC|BRU|HKG|TPE|TSA|KHH|SIN|XSP|NRT|HND|KIX|CTS|FUK|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD|LHR|LGW))'
@@ -329,8 +328,8 @@ proxy-groups: #!replace
   - { name: Tiktok,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png" }
 
   # ==================== 商业服务 ====================
-  - { name: 人工智能,     type: select, proxies: [ 自建SG, 自建节点, 狮城策略, 全球手动 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
-  - { name: JetBrains,  type: select, proxies: [ 默认代理, 自建SG, 狮城策略, 香港策略, 美国策略, 日本策略, 自建节点, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/JetBrains.png" }
+  - { name: 人工智能,     type: select, proxies: [ 自建节点, 狮城策略, 全球手动 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
+  - { name: JetBrains,  type: select, proxies: [ 默认代理, 狮城策略, 香港策略, 美国策略, 日本策略, 自建节点, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/JetBrains.png" }
   - { name: 货币平台,     <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
   - { name: 谷歌服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
   - { name: 苹果服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
@@ -343,7 +342,6 @@ proxy-groups: #!replace
   - { name: 美国策略,     type: select, proxies: [ 美国自动 ], include-all: true, filter: *FilterUS, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png" }
 
   # ==================== 自建策略组 ====================
-  - { name: 自建SG, type: url-test, interval: 200, lazy: true, url: 'https://www.gstatic.com/generate_204', include-all: true, filter: *FilterSelfSG }
   - { name: 自建节点, type: select, include-all: true, filter: '^(?=.*(?i)(自建|落地|微林))(?!.*链式落地).*$' }
   - { name: 流量节点, type: select, proxies: [ 流量节点自动, 香港自动LXY ], include-all: true, filter: *FilterTraffic }
   - { name: 前置节点, type: select, proxies: [ 香港策略, 狮城策略, 日本策略, 美国策略, 直接连接 ], include-all: true, filter: '^(?=.*自建)(?!.*(?i)(ix|中转|落地)).*$' }
