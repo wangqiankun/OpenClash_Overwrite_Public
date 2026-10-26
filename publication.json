@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "source_revision": "19f319377f00147bfe65a7493812c4e24545ebbb",
+  "source_revision": "5599e85ddbd56291dd313a9f21c9239a849c53f0",
   "files": {
-    "Yaml/666OS-DNS-Conf.yaml": "c1412e5e2da2fb22a8626933a1068011188af582a341a3d6329a99abe16c60b7",
+    "Yaml/666OS-DNS-Conf.yaml": "2a99c5fc1f2a7ea2e837e7f85acf162931ebca9edf1c6c1f68eaafbeec76f840",
     "Overwrite/666OS-dns.conf": "5229c70e7680517da157dd182410b58461501a3471f00c163c406c442512586d",
     "Rules/Myself_AI_Domain.list": "3745d5919c37739d2fa884927c7d67fa7b705167c21f4f4b4463938795ca31f9",
     "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",

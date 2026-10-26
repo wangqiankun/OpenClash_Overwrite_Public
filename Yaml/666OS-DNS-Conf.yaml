@@ -328,7 +328,7 @@ proxy-groups: #!replace
   - { name: Tiktok,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png" }
 
   # ==================== 商业服务 ====================
-  - { name: 人工智能,     type: select, proxies: [ 自建节点, 狮城策略, 全球手动 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
+  - { name: 人工智能,     type: select, proxies: [ 自建节点, 狮城策略, 全球手动 ], include-all: true, filter: '(?i)ix$', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
   - { name: 货币平台,     <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
   - { name: 谷歌服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
   - { name: 苹果服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
