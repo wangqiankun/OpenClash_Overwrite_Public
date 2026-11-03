@@ -248,12 +248,20 @@ dns:
 
 
 # 节点筛选正则表达式 - 基于地理位置和关键词过滤
-FilterHK: &FilterHK '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
-FilterHKFlower: &FilterHKFlower '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*Flower)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|Test)).*$'
-FilterHKLXY: &FilterHKLXY '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*LXY)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
-FilterSG: &FilterSG '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
-FilterJP: &FilterJP '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
-FilterUS: &FilterUS '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建)).*$'
+# 地区通用过滤器排除已拆分到 LXY、Bocchi 自动组的节点，避免重复显示。
+FilterHK: &FilterHK '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY|Bocchi)).*$'
+FilterHKFlower: &FilterHKFlower '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*Flower)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY|Bocchi|Test)).*$'
+FilterHKLXY: &FilterHKLXY '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*(?i)LXY)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|Bocchi)).*$'
+FilterHKBocchi: &FilterHKBocchi '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?=.*(?i)Bocchi)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY)).*$'
+FilterSG: &FilterSG '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY|Bocchi)).*$'
+FilterSGLXY: &FilterSGLXY '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?=.*(?i)LXY)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|Bocchi)).*$'
+FilterSGBocchi: &FilterSGBocchi '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?=.*(?i)Bocchi)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY)).*$'
+FilterJP: &FilterJP '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY|Bocchi)).*$'
+FilterJPLXY: &FilterJPLXY '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?=.*(?i)LXY)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|Bocchi)).*$'
+FilterJPBocchi: &FilterJPBocchi '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?=.*(?i)Bocchi)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY)).*$'
+FilterUS: &FilterUS '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY|Bocchi)).*$'
+FilterUSLXY: &FilterUSLXY '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?=.*(?i)LXY)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|Bocchi)).*$'
+FilterUSBocchi: &FilterUSBocchi '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?=.*(?i)Bocchi)(?!.*(排除1|排除2|落地|微林|5x|ix|中转|自建|LXY)).*$'
 FilterTrafficAuto: &FilterTrafficAuto '^(?=.*(?i)(实验性|实验|测试|Test|Traffic|流量))(?!.*(?i)(落地|微林|ix|中转)).*$'
 FilterTraffic: &FilterTraffic '^(?=.*(?i)(实验性|实验|测试|Test|Traffic|流量|temp))(?!.*(?i)(落地|微林|ix|中转)).*$'
 #FilterChainLanding: &FilterChainLanding '^(?=.*自建)(?=.*SG)(?!.*(测试|备用|Traffic|Test)).*$'
@@ -334,11 +342,11 @@ proxy-groups: #!replace
   - { name: 苹果服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
 
   # ==================== 地区策略组 ====================
-  # 香港策略按供应商依次故障转移，优先 Flower，故障时切换至 LXY。
-  - { name: 香港策略,     <<: *BaseFB, proxies: [ 香港自动Flower, 香港自动LXY ], include-all: true, filter: *FilterHK, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png" }
-  - { name: 狮城策略,     type: select, proxies: [ 狮城自动 ], include-all: true, filter: *FilterSG, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png" }
-  - { name: 日本策略,     type: select, proxies: [ 日本自动 ], include-all: true, filter: *FilterJP, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png" }
-  - { name: 美国策略,     type: select, proxies: [ 美国自动 ], include-all: true, filter: *FilterUS, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png" }
+  # 香港策略按供应商依次故障转移，优先 Flower，其次 LXY，最后 Bocchi。
+  - { name: 香港策略,     <<: *BaseFB, proxies: [ 香港自动Flower, 香港自动LXY, 香港自动Bocchi ], include-all: true, filter: *FilterHK, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png" }
+  - { name: 狮城策略,     type: select, proxies: [ 狮城自动, 狮城自动LXY, 狮城自动Bocchi ], include-all: true, filter: *FilterSG, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png" }
+  - { name: 日本策略,     type: select, proxies: [ 日本自动, 日本自动LXY, 日本自动Bocchi ], include-all: true, filter: *FilterJP, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png" }
+  - { name: 美国策略,     type: select, proxies: [ 美国自动, 美国自动LXY, 美国自动Bocchi ], include-all: true, filter: *FilterUS, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png" }
 
   # ==================== 自建策略组 ====================
   - { name: 自建节点, type: select, include-all: true, filter: '^(?=.*(?i)(自建|落地|微林))(?!.*链式落地).*$' }
@@ -350,12 +358,19 @@ proxy-groups: #!replace
   - { name: 全球手动,     type: select, include-all: true, filter: *FilterAL, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Clubhouse.png" }
 
   # ==================== 自动测速组 ====================
-  # 香港节点按供应商前缀拆分，避免两个机场的节点参与同一个测速组。
+  # 地区节点按供应商拆分，通用组和供应商组互不重复。
   - { name: 香港自动Flower, <<: *BaseUT, include-all: true, filter: *FilterHKFlower, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   - { name: 香港自动LXY,    <<: *BaseUT, include-all: true, filter: *FilterHKLXY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 香港自动Bocchi, <<: *BaseUT, include-all: true, filter: *FilterHKBocchi, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   - { name: 狮城自动,     <<: *BaseUT, include-all: true, filter: *FilterSG, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 狮城自动LXY,    <<: *BaseUT, include-all: true, filter: *FilterSGLXY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 狮城自动Bocchi, <<: *BaseUT, include-all: true, filter: *FilterSGBocchi, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   - { name: 日本自动,     <<: *BaseUT, include-all: true, filter: *FilterJP, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 日本自动LXY,    <<: *BaseUT, include-all: true, filter: *FilterJPLXY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 日本自动Bocchi, <<: *BaseUT, include-all: true, filter: *FilterJPBocchi, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   - { name: 美国自动,     <<: *BaseUT, include-all: true, filter: *FilterUS, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 美国自动LXY,    <<: *BaseUT, include-all: true, filter: *FilterUSLXY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 美国自动Bocchi, <<: *BaseUT, include-all: true, filter: *FilterUSBocchi, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   # 流量节点按指定优先级故障转移，恢复健康后自动回切至更高优先级节点。
   - { name: 流量节点自动, <<: *BaseFB, interval: 60, lazy: false, max-failed-times: 1, timeout: 2000, expected-status: 204, include-all: true, filter: *FilterTrafficAuto, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
 
