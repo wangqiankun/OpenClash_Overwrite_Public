@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "source_revision": "0c637ec92e54d420ecec4d453da48a7bb64392f6",
+  "source_revision": "7a570bf21c9964aa48045203b0119f097a678800",
   "files": {
-    "Yaml/config.yaml": "3fbfa8c58225cef63e7790162993f80ddc6c275826a5bf7153cf62d2fd2062ce",
+    "Yaml/config.yaml": "378d77db575d90addb047cb7360f99cc960b6e26bda2fa985dc41b58f15ef105",
     "Overwrite/overwrite.conf": "d3393f5bf25930f66e475b0720854dd3f04f5c67ab77dc6245c3822975e4bf9c",
     "Rules/Myself_AI_Domain.list": "3745d5919c37739d2fa884927c7d67fa7b705167c21f4f4b4463938795ca31f9",
     "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",

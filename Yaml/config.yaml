@@ -337,6 +337,7 @@ proxy-groups: #!replace
 
   # ==================== 商业服务 ====================
   - { name: AI,           type: select, proxies: [ 自建节点, 狮城策略, 全球手动 ], include-all: true, filter: '(?i)ix$', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
+  - { name: JetBrains,    type: select, proxies: [ 默认代理, 狮城策略, 香港策略, 美国策略, 日本策略, 自建节点, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/JetBrains.png" }
   - { name: Crypto,       <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
   - { name: Google,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
   - { name: Apple,        <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
@@ -417,7 +418,7 @@ rules:
   #  - RULE-SET,Streaming,国际媒体
   - RULE-SET,Apple,Apple
   - RULE-SET,Google,Google
-  - RULE-SET,JetBrains,国外流量
+  - RULE-SET,JetBrains,JetBrains
   - GEOSITE,geolocation-!cn,国外流量
   - RULE-SET,China,国内流量
 
@@ -484,6 +485,7 @@ rule-providers:
   Myself_Download_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Download_Domain.list" }
   Myself_Emby_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Emby_Domain.list" }
   category-ai: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
+  JetBrains: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Jetbrains/Jetbrains.list" }
   PayPal: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs" }
 
   # IP规则
@@ -500,4 +502,3 @@ rule-providers:
   FacebookIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs" }
   ChinaIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs" }
   # ==================== EOF ====================
-  JetBrains: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Jetbrains/Jetbrains.list" }
