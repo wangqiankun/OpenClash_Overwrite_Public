@@ -6,7 +6,7 @@
 
 | 模块 | 功能 | 访问入口 / 使用方式 | 主要文件 |
 | --- | --- | --- | --- |
-| OpenClash 666OS DNS 配置 | Mihomo Meta 核心参数、DNS 与嗅探覆写、666OS 配置下载及 Sub-Store 订阅注入 | [公共配置仓库](https://github.com/wangqiankun/OpenClash_Overwrite_Public) · [问题反馈](https://github.com/wangqiankun/OpenClash_Overwrite_Public/issues) · [覆写模块地址](https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Overwrite/666OS-dns.conf) | [`Overwrite/666OS-dns.conf`](Overwrite/666OS-dns.conf)、[`Yaml/666OS-DNS-Conf.yaml`](Yaml/666OS-DNS-Conf.yaml) |
+| OpenClash 覆写与核心配置 | Mihomo Meta 核心参数、DNS 与嗅探覆写、配置下载及 Sub-Store 订阅注入 | [公共配置仓库](https://github.com/wangqiankun/OpenClash_Overwrite_Public) · [问题反馈](https://github.com/wangqiankun/OpenClash_Overwrite_Public/issues) · [覆写模块地址](https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Overwrite/overwrite.conf) | [`Overwrite/overwrite.conf`](Overwrite/overwrite.conf)、[`Yaml/config.yaml`](Yaml/config.yaml) |
 | 自定义分流规则 | AI、加密货币、直连域名/IP、下载、Emby、IP 检测和代理域名规则 | 由 666OS YAML 中的 rule provider 加载 | [`Rules/`](Rules/) |
 | 代理流量监控 | OpenWrt 与 Stash 采集代理连接流量，Worker 接收并展示统计 | [监控面板](https://traffic.991886.xyz)；OpenWrt 采集端向 `/api/report` 上报 | 源仓库脚本 `scripts/traffic-worker.js`、`scripts/openclash-traffic-collector.py`、`scripts/stash-traffic-collector.js` |
 | Emby Downloader | 在 NAS 上搜索 Emby 媒体、创建下载队列、查看进度并断点续传；支持模拟播放器抓取直连媒体任务 | 在 fnOS Docker 项目启动后访问 `http://飞牛局域网IP:8088`（端口可自行调整） | 源仓库目录 `emby-downloader/`，详细用法见其中的 `README.md` |
@@ -21,7 +21,7 @@
 2. 按需设置环境变量 `EN_KEY`，值为你自己的订阅或 Sub-Store 聚合订阅地址。该值会注入 YAML 中名为 `Sub-store` 的 proxy provider；不要将真实订阅地址提交到仓库。
 3. 应用配置后，在 OpenClash 中检查配置加载状态和策略组是否符合预期。
 
-666OS YAML 中的自定义规则覆盖 AI、加密货币、直连、下载、Emby、IP 检测和代理域名/IP。具体规则以 [`Yaml/666OS-DNS-Conf.yaml`](Yaml/666OS-DNS-Conf.yaml) 与 [`Rules/`](Rules/) 为准。
+YAML 中的自定义规则覆盖 AI、加密货币、直连、下载、Emby、IP 检测和代理域名/IP。具体规则以 [`Yaml/config.yaml`](Yaml/config.yaml) 与 [`Rules/`](Rules/) 为准。
 
 ## 模块说明
 
