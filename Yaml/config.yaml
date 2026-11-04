@@ -1,4 +1,4 @@
-name: 基于666OS覆写
+name: 自用策略
 desc: 包含策略组、规则集与自定义分流，主要用在主路由
 
 proxy-providers:

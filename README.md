@@ -7,7 +7,7 @@
 | 模块 | 功能 | 访问入口 / 使用方式 | 主要文件 |
 | --- | --- | --- | --- |
 | OpenClash 覆写与核心配置 | Mihomo Meta 核心参数、DNS 与嗅探覆写、配置下载及 Sub-Store 订阅注入 | [公共配置仓库](https://github.com/wangqiankun/OpenClash_Overwrite_Public) · [问题反馈](https://github.com/wangqiankun/OpenClash_Overwrite_Public/issues) · [覆写模块地址](https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Overwrite/overwrite.conf) | [`Overwrite/overwrite.conf`](Overwrite/overwrite.conf)、[`Yaml/config.yaml`](Yaml/config.yaml) |
-| 自定义分流规则 | AI、加密货币、直连域名/IP、下载、Emby、IP 检测和代理域名规则 | 由 666OS YAML 中的 rule provider 加载 | [`Rules/`](Rules/) |
+| 自定义分流规则 | AI、加密货币、直连域名/IP、下载、Emby、IP 检测和代理域名规则 | 由 YAML 中的 rule provider 加载 | [`Rules/`](Rules/) |
 | 代理流量监控 | OpenWrt 与 Stash 采集代理连接流量，Worker 接收并展示统计 | [监控面板](https://traffic.991886.xyz)；OpenWrt 采集端向 `/api/report` 上报 | 源仓库脚本 `scripts/traffic-worker.js`、`scripts/openclash-traffic-collector.py`、`scripts/stash-traffic-collector.js` |
 | Emby Downloader | 在 NAS 上搜索 Emby 媒体、创建下载队列、查看进度并断点续传；支持模拟播放器抓取直连媒体任务 | 在 fnOS Docker 项目启动后访问 `http://飞牛局域网IP:8088`（端口可自行调整） | 源仓库目录 `emby-downloader/`，详细用法见其中的 `README.md` |
 | Sub-Store 运维 | 检查、更新或回滚 GCP 上的 Sub-Store 服务，并维护自动更新 | [Sub-Store](https://substore.991886.xyz)；更新前使用脚本的 `--check` 检查 | 源仓库脚本 `scripts/gcp-update-substore.sh`、`scripts/gcp-install-substore-auto-update.sh` |
@@ -39,7 +39,7 @@ YAML 中的自定义规则覆盖 AI、加密货币、直连、下载、Emby、IP
 
 ### 公共发布范围
 
-公共仓库由源仓库的 `scripts/public-files.json` 控制白名单，同步 666OS 配置、规则、Stash 采集脚本和本 README。Emby Downloader、Worker 后端、更新脚本及其他运维工具属于源仓库内容，不会随公共配置仓库发布。不要提交订阅链接、API Token、证书、`.env` 或本地账号文件。
+公共仓库由源仓库的 `scripts/public-files.json` 控制白名单，同步配置、规则、Stash 采集脚本和本 README。Emby Downloader、Worker 后端、更新脚本及其他运维工具属于源仓库内容，不会随公共配置仓库发布。不要提交订阅链接、API Token、证书、`.env` 或本地账号文件。
 
 ## 本地检查
 
