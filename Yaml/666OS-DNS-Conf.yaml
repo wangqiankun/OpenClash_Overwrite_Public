@@ -313,8 +313,8 @@ proxy-groups: #!replace
   # ==================== 主要策略组 ====================
   - { name: 默认代理,     <<: *SelectFB, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Static.png" }
   - { name: 故障转移,     <<: *BaseFB, proxies: [ 香港策略, 狮城策略, 日本策略, 美国策略, 流量节点, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/ULB.png" }
-  - { name: 国外流量,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png" }
-  - { name: 国内流量,     <<: *SelectDC, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png" }
+  - { name: 国外流量,     <<: *SelectPY, hidden: true, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png" }
+  - { name: 国内流量,     <<: *SelectDC, hidden: true, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png" }
   - { name: 兜底流量,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png" }
   - { name: 直接连接,     type: select, proxies: [ DIRECT ], hidden: true, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Direct.png" }
 
@@ -499,5 +499,5 @@ rule-providers:
   GoogleIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs" }
   FacebookIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs" }
   ChinaIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs" }
-# ==================== EOF ====================
+  # ==================== EOF ====================
   JetBrains: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Jetbrains/Jetbrains.list" }
