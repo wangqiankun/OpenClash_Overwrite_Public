@@ -324,22 +324,22 @@ proxy-groups: #!replace
   #  - { name: 抖快书定位,   type: select, proxies: [ 直接连接, 香港策略, 狮城策略, 日本策略, 美国策略 ], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png }
 
   # ==================== 媒体服务 ====================
-  - { name: Emby服,      <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png" }
-  - { name: 油管视频,     <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png" }
+  - { name: Emby,        <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png" }
+  - { name: YouTube,     <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png" }
   #  - { name: 奈飞视频,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Netflix.png }
   #  - { name: 国际媒体,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png }
   #  - { name: 新闻媒体,     <<: *SelectUS, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple_News.png }
 
   # ==================== 社交平台 ====================
-  - { name: 电报消息,     <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Telegram_X.png" }
-  - { name: 推特社交,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/X.png" }
-  - { name: Tiktok,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png" }
+  - { name: Telegram,    <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Telegram_X.png" }
+  - { name: Twitter,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/X.png" }
+  - { name: TikTok,      <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png" }
 
   # ==================== 商业服务 ====================
-  - { name: 人工智能,     type: select, proxies: [ 自建节点, 狮城策略, 全球手动 ], include-all: true, filter: '(?i)ix$', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
-  - { name: 货币平台,     <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
-  - { name: 谷歌服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
-  - { name: 苹果服务,     <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
+  - { name: AI,           type: select, proxies: [ 自建节点, 狮城策略, 全球手动 ], include-all: true, filter: '(?i)ix$', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png" }
+  - { name: Crypto,       <<: *SelectPY, icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png" }
+  - { name: Google,       <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png" }
+  - { name: Apple,        <<: *SelectPY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png" }
 
   # ==================== 地区策略组 ====================
   # 香港策略按供应商依次故障转移，优先 Flower，其次 LXY，最后 Bocchi。
@@ -379,12 +379,12 @@ proxy-groups: #!replace
 rules:
   # Firebase Analytics 与 Google Tag Manager 上报走谷歌服务，避免被后续拦截规则拒绝。
   - RULE-SET,Myself_Direct_Domain,直接连接
-  - RULE-SET,Myself_AI_Domain,人工智能
+  - RULE-SET,Myself_AI_Domain,AI
   - RULE-SET,Myself_Proxy_Domain,国外流量
   - RULE-SET,Myself_Download_Domain,流量节点
-  - RULE-SET,Myself_Emby_Domain,Emby服
+  - RULE-SET,Myself_Emby_Domain,Emby
   - RULE-SET,Myself_IP_Detection,网络测试
-  - RULE-SET,Myself_Crypto_Domain,货币平台
+  - RULE-SET,Myself_Crypto_Domain,Crypto
   - RULE-SET,Myself_Direct_IP,直接连接,no-resolve
   # 拦截规则
   - RULE-SET,Tracking,广告策略
@@ -401,22 +401,22 @@ rules:
   - RULE-SET,XPTV,直接连接
   - RULE-SET,Download,直接连接
   - RULE-SET,AppleCN,直接连接
-  - RULE-SET,category-ai,人工智能
+  - RULE-SET,category-ai,AI
   - DOMAIN-KEYWORD,speedtest,网络测试
   - RULE-SET,Speedtest,网络测试
-  - RULE-SET,Tiktok,Tiktok
-  - RULE-SET,Twitter,推特社交
-  - RULE-SET,TelegramClash,电报消息
-  - RULE-SET,TelegramLoon,电报消息
-  - RULE-SET,Telegram,电报消息
+  - RULE-SET,Tiktok,TikTok
+  - RULE-SET,Twitter,Twitter
+  - RULE-SET,TelegramClash,Telegram
+  - RULE-SET,TelegramLoon,Telegram
+  - RULE-SET,Telegram,Telegram
   #  - RULE-SET,NewsMedia,新闻媒体
-  - RULE-SET,Crypto,货币平台
-  - RULE-SET,Emby,Emby服
+  - RULE-SET,Crypto,Crypto
+  - RULE-SET,Emby,Emby
   #  - RULE-SET,Netflix,奈飞视频
-  - RULE-SET,YouTube,油管视频
+  - RULE-SET,YouTube,YouTube
   #  - RULE-SET,Streaming,国际媒体
-  - RULE-SET,Apple,苹果服务
-  - RULE-SET,Google,谷歌服务
+  - RULE-SET,Apple,Apple
+  - RULE-SET,Google,Google
   - RULE-SET,JetBrains,国外流量
   - GEOSITE,geolocation-!cn,国外流量
   - RULE-SET,China,国内流量
@@ -425,12 +425,12 @@ rules:
   - RULE-SET,AdvertisingIP,广告策略,no-resolve
   - RULE-SET,PrivateIP,直接连接,no-resolve
   - RULE-SET,XPTVIP,直接连接,no-resolve
-  - RULE-SET,AIIP,人工智能,no-resolve
-  - RULE-SET,TelegramIP,电报消息,no-resolve
-  - RULE-SET,EmbyIP,Emby服,no-resolve
+  - RULE-SET,AIIP,AI,no-resolve
+  - RULE-SET,TelegramIP,Telegram,no-resolve
+  - RULE-SET,EmbyIP,Emby,no-resolve
   #  - RULE-SET,NetflixIP,奈飞视频,no-resolve
   #  - RULE-SET,StreamingIP,国际媒体,no-resolve
-  - RULE-SET,GoogleIP,谷歌服务,no-resolve
+  - RULE-SET,GoogleIP,Google,no-resolve
   - GEOIP,!CN,国外流量,no-resolve
   - RULE-SET,ChinaIP,国内流量,no-resolve
 
