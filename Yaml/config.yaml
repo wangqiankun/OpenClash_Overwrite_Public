@@ -351,7 +351,7 @@ proxy-groups: #!replace
 
   # ==================== 自建策略组 ====================
   - { name: 自建节点, type: select, include-all: true, filter: '^(?=.*(?i)(自建|落地|微林))(?!.*链式落地).*$' }
-  - { name: 流量节点, type: select, proxies: [ 流量节点自动, 香港自动LXY ], include-all: true, filter: *FilterTraffic }
+  - { name: 流量节点, type: select, proxies: [ 流量节点自动, 香港自动LXY, 香港自动Bocchi ], include-all: true, filter: *FilterTraffic }
   - { name: 前置节点, type: select, proxies: [ 香港策略, 狮城策略, 日本策略, 美国策略, 直接连接 ], include-all: true, filter: '^(?=.*自建)(?!.*(?i)(ix|中转|落地)).*$' }
 
   # ==================== 其他策略组 ====================
