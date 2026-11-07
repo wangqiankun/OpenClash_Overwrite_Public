@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source_revision": "409ce21dc6fc644ccd4ccc20bbe2d7c480e47a4b",
+  "source_revision": "b3759a14f4904e2a3a44b5f5437e66386441757b",
   "files": {
     "Yaml/config.yaml": "610cf633916f411592886faae71c4abe9c5702654b2c9a96579e431f8ca1a9d4",
     "Overwrite/overwrite.conf": "d3393f5bf25930f66e475b0720854dd3f04f5c67ab77dc6245c3822975e4bf9c",
@@ -13,6 +13,6 @@
     "Rules/Myself_IP_Detection.list": "8adfce31ccfd3bef3f704d0838f9185ecfb2f26d4d94201f33f250781aec7b1d",
     "Rules/Myself_Proxy_Domain.list": "2f947d73899223e1118cf933f95a483b2238cfeafee9e2d098c96d5f52bd04b1",
     "Scripts/stash-traffic-collector.js": "ebd0d658967ab665499ebedfce902db3ee4b85d7cc96c29182b83778c3552bd2",
-    "README.md": "0daeff4c3fce0f93d833ceadc7529c03b67c4777ad2d0ef03aa5c3b37ec69f63"
+    "README.md": "45c0b3ac152cd357c8e79653b36125a310c2f055c242a118593de6634d636454"
   }
 }
