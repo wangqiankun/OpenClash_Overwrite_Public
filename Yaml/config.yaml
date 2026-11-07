@@ -378,6 +378,8 @@ proxy-groups: #!replace
 # ==================== 规则路由 ====================
 # 备注：优先走 rules 里从上到下第一个命中的策略。
 rules:
+  # 测速专用域名分流至网络测试策略组，供端到端体感测速安全隔离
+  - DOMAIN,speed.cloudflare.com,网络测试
   # Firebase Analytics 与 Google Tag Manager 上报走谷歌服务，避免被后续拦截规则拒绝。
   - RULE-SET,Myself_Direct_Domain,直接连接
   - RULE-SET,Myself_AI_Domain,AI
