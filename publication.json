@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "source_revision": "c15c6f351ece3bad1838716e2432363237bb8be0",
+  "source_revision": "873097a909a9fb734f456d16ad6f89d1de890be3",
   "files": {
-    "Yaml/config.yaml": "f94c5066fdd78f74729bef0a6d7295f8cfef731582b7301794846066ce61bd58",
+    "Yaml/config.yaml": "9b12fc44a359e2e79a7d8e779922c04eb8f89d00dc4f17f533fe99d258bfc464",
     "Overwrite/overwrite.conf": "d3393f5bf25930f66e475b0720854dd3f04f5c67ab77dc6245c3822975e4bf9c",
     "Rules/Myself_AI_Domain.list": "3745d5919c37739d2fa884927c7d67fa7b705167c21f4f4b4463938795ca31f9",
     "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",
@@ -13,6 +13,6 @@
     "Rules/Myself_IP_Detection.list": "bb11a18608a30ba3f60786a91d6c0c0d7b5ef17b4536163c6c38b65f7a318cd9",
     "Rules/Myself_Proxy_Domain.list": "2f947d73899223e1118cf933f95a483b2238cfeafee9e2d098c96d5f52bd04b1",
     "Scripts/stash-traffic-collector.js": "ebd0d658967ab665499ebedfce902db3ee4b85d7cc96c29182b83778c3552bd2",
-    "README.md": "f7b73faa656d4b1642d79ce55d7e813b1e2603efa96db4cd678d9728ef6221ef"
+    "README.md": "74863185451192f0347bebdc2e8325bac6ce8da91bf562f4ae8f92203b562c6f"
   }
 }
