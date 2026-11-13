@@ -38,8 +38,8 @@ redir-port: 7892
 mixed-port: 7893
 # 透明代理端口，用于 Linux TProxy TCP 和 TProxy UDP
 tproxy-port: 7895
-# IPv6 总开关；关闭会阻断所有 IPv6 连接并屏蔽 DNS AAAA 请求
-ipv6: false
+# IPv6 总开关；开启以允许 Mihomo 内核连接 IPv6 代理节点（配合 dns.ipv6: false 可安全阻断客户端泄露）
+ipv6: true
 # 允许局域网连接
 allow-lan: true
 unified-delay: true
@@ -163,7 +163,7 @@ dns:
   # 开启 DNS 服务器监听
   listen: 0.0.0.0:7874
   cache-algorithm: arc
-  # false 将返回 AAAA 的空结果
+  # 保持 false：返回 AAAA 的空结果，强制局域网客户端的 AI 与外网请求回落 IPv4 (Fake-IP)，杜绝真实 IPv6 暴露
   ipv6: false
   # 是否开启 DoH 支持 HTTP/3，将并发尝试；强烈不建议和 respect-rules 一起使用
   prefer-h3: false
