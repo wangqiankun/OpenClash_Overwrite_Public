@@ -1,80 +1,24 @@
-# OpenClash 配置与网络工具
+# OpenClash 公共配置使用说明
 
-本仓库以 OpenClash/Mihomo 配置为核心，同时维护代理流量监控、Emby 下载器及若干更新和运维脚本。公共仓库只同步明确列入白名单的配置与规则文件；各模块的代码位置和入口见下表。
+本项目公开发布的 [OpenClash 配置仓库](https://github.com/wangqiankun/OpenClash_Overwrite_Public) 提供 OpenClash/Mihomo 配置、覆写和域名/IP 规则。私有仓库源码位于 `configs/openclash/`；面向路由器和公共订阅的文件路径保持原样。
 
-## 功能模块
-
-| 模块 | 功能 | 访问入口 / 使用方式 | 主要文件 |
-| --- | --- | --- | --- |
-| OpenClash 覆写与核心配置 | Mihomo Meta 核心参数、DNS 与嗅探覆写、配置下载及 Sub-Store 订阅注入 | [公共配置仓库](https://github.com/wangqiankun/OpenClash_Overwrite_Public) · [问题反馈](https://github.com/wangqiankun/OpenClash_Overwrite_Public/issues) · [覆写模块地址](https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Overwrite/overwrite.conf) | [`Overwrite/overwrite.conf`](Overwrite/overwrite.conf)、[`Yaml/config.yaml`](Yaml/config.yaml) |
-| 自定义分流规则 | AI、加密货币、直连域名/IP、下载、Emby、IP 检测和代理域名规则 | 由 YAML 中的 rule provider 加载 | [`Rules/`](Rules/) |
-| 代理流量监控 | OpenWrt 与 Stash 采集代理连接流量，Worker 接收并展示统计 | [监控面板](https://traffic.991886.xyz)；OpenWrt 采集端向 `/api/report` 上报 | 源仓库脚本 `scripts/traffic-worker.js`、`scripts/openclash-traffic-collector.py`、`scripts/stash-traffic-collector.js` |
-| 端到端体感监控 | 软路由向 CF-Server-Monitor 反向注入自建节点端到端延迟（RTT）与业务 TTFB | [探针大盘](https://tanzhen.991886.xyz)；`make experience-deploy` 一键部署 | 源仓库脚本 `scripts/report-experience.py`、`scripts/deploy-experience.sh` |
-| Emby Downloader | 在 NAS 上搜索 Emby 媒体、创建下载队列、查看进度并断点续传；支持模拟播放器抓取直连媒体任务 | 在 fnOS Docker 项目启动后访问 `http://飞牛局域网IP:8088`（端口可自行调整） | 源仓库目录 `emby-downloader/`，详细用法见其中的 `README.md` |
-| Sub-Store 运维 | 检查、更新或回滚 GCP 上的 Sub-Store 服务，并维护自动更新 | [Sub-Store](https://substore.991886.xyz)；更新前使用脚本的 `--check` 检查 | 源仓库脚本 `scripts/gcp-update-substore.sh`、`scripts/gcp-install-substore-auto-update.sh` |
-| 配置发布与运维 | 校验 OpenClash 配置、比较路由器运行配置、发布公共配置；另含 Emby 更新和 Debian 网启预置生成工具 | 本地脚本入口，执行前先查看脚本帮助及环境要求；`deploy-openclash.sh` 默认只校验和推送，需显式 `--deploy` 才会更新路由器 | 源仓库目录 `scripts/`；发布白名单文件 `scripts/public-files.json` |
-
-## OpenClash 快速使用
+## 安装
 
 适用于 OpenClash **v0.47.006 及以上**，覆写配置使用 Mihomo Meta 核心。
 
-1. 在 OpenClash 添加 HTTP 类型的覆写模块，使用上表中的“覆写模块地址”。
-2. 按需设置环境变量 `EN_KEY`，值为你自己的订阅或 Sub-Store 聚合订阅地址。该值会注入 YAML 中名为 `Sub-store` 的 proxy provider；不要将真实订阅地址提交到仓库。
-3. 应用配置后，在 OpenClash 中检查配置加载状态和策略组是否符合预期。
+1. 在 OpenClash 中添加 HTTP 类型的覆写模块，使用原覆写地址：
 
-YAML 中的自定义规则覆盖 AI、加密货币、直连、下载、Emby、IP 检测和代理域名/IP。具体规则以 [`Yaml/config.yaml`](Yaml/config.yaml) 与 [`Rules/`](Rules/) 为准。
+   `https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Overwrite/overwrite.conf`
 
-## 节点标签与策略组联动规范（Sub-Store）
+2. 按需设置 `EN_KEY`，值为你的订阅或 Sub-Store 聚合订阅地址。该值会注入 `Sub-store` proxy provider；不要将真实订阅地址提交到仓库。
+3. 应用配置后，在 OpenClash 界面确认加载状态和策略组。
 
-通过在 Sub-Store 维护节点时使用简易中括号标签（如 `[AI]VMISS-US`），Sub-Store 配合脚本操作符可自动将其转换为**零宽隐形 Unicode 字符**追加在节点末尾。
+规则覆盖 AI、加密货币、直连、下载、Emby、IP 检测和代理域名/IP。实际规则以 [`Yaml/config.yaml`](https://github.com/wangqiankun/OpenClash_Overwrite_Public/blob/main/Yaml/config.yaml) 及 `Rules/Myself_*.list` 为准。AI 服务规则进入配置中声明的 AI 策略组。
 
-**特性效果**：
-- **面板卡片 100% 纯净**：节点名称展示为原始干净文本（如 `VMISS-US`），肉眼完全看不到任何 Emoji 或中括号；
-- **OpenClash 精准识别**：Mihomo 内核通过隐形字符正则精准将节点归入对应策略组。
+## Sub-Store 节点标签
 
-| 节点输入标签 | 隐形 Unicode 编码 | 自动归入的 OpenClash 策略组 | 说明 |
-| :--- | :--- | :--- | :--- |
-| **`[AI]`** | `\u200b` | **AI 策略组** | 优先进入 AI 商业服务组 |
-| **`[Emby]`** 或 **`[Media]`** | `\u200d` | **Emby 策略组**、**YouTube 策略组** | 适合流媒体看剧、原生解锁的节点 |
-| **`[YouTube]`** | `\u200d` | **YouTube 策略组** | 油管专属节点 |
-| **`[TG]`** 或 **`[Telegram]`** | `\u2062` | **Telegram 策略组** | 电报专用节点 |
-| **`[Traffic]`** 或 **`[流量]`** | `\u200c` | **流量节点**、**流量节点自动** | 0.1x~0.5x 低倍率/大流量节点 |
-| **`[自建]`** 或 **`[Self]`** | `\u2060` | **自建节点** | 自建 VPS、微林、落地节点 |
-| **`[前置]`** 或 **`[Relay]`** | `\u2061` | **前置节点** | 自建入口/中转前置节点 |
-| **`[HK]`** / **`[SG]`** / **`[JP]`** / **`[US]`** | - | **香港策略** / **狮城策略** / **日本策略** / **美国策略** | 地区核心策略组与测速组 |
-| **`[Flower]`** / **`[LXY]`** / **`[Bocchi]`** | - | 对应地区的供应商自动测速组 | 区分供应商测速与主备容灾 |
+通过在 Sub-Store 节点名中使用 `[AI]`、`[Emby]`、`[Media]`、`[YouTube]`、`[TG]`、`[Traffic]`、`[自建]`、`[前置]` 等中括号标签，配合节点脚本操作符生成零宽 Unicode 标记，OpenClash 策略组可识别节点用途。地区标签 `[HK]`、`[SG]`、`[JP]`、`[US]` 与供应商标签 `[Flower]`、`[LXY]`、`[Bocchi]` 也与现有筛选兼容。
 
-> **提示**：策略组同时兼容隐形字符与历史中括号标签。
+## 开发校验
 
-## 模块说明
-
-### 代理流量监控
-
-面板地址为 [traffic.991886.xyz](https://traffic.991886.xyz)。OpenWrt 采集程序和 Stash JavaScript 扩展分别负责采集并向 Worker 上报；Worker 提供统计查询接口。上报凭据由运行环境配置，不能写入公开配置或 README。
-
-### Emby Downloader
-
-该工具以 Docker Compose 运行，默认 Web 端口为 `8088`，下载目录默认映射到项目目录下的 `downloads/`。部署步骤、客户端模拟、抓取接口和限制详见源仓库 `emby-downloader/README.md`。首次使用请在可信的局域网或 VPN 中部署，并按该说明自行设置抓取接口密钥。
-
-### Sub-Store
-
-在线入口为 [substore.991886.xyz](https://substore.991886.xyz)。维护脚本支持状态检查、更新和指定镜像回滚；安装自动更新任务及运行更新操作前，请先阅读对应脚本参数。README 仅记录入口，不代表已触发服务变更。
-
-### 公共发布范围
-
-公共仓库由源仓库的 `scripts/public-files.json` 控制白名单，同步配置、规则、Stash 采集脚本和本 README。Emby Downloader、Worker 后端、更新脚本及其他运维工具属于源仓库内容，不会随公共配置仓库发布。不要提交订阅链接、API Token、证书、`.env` 或本地账号文件。
-
-## 本地检查
-
-仓库没有单独的编译步骤。修改配置或代码后，可运行 CI 使用的检查：
-
-```bash
-python -B scripts/validate-openclash.py
-python -B -m unittest discover -s tests -p 'test_*.py'
-python -B -m unittest discover -s emby-downloader -p 'test_*.py'
-node --test tests/*.mjs
-for script in scripts/*.sh scripts/vps/*.sh; do bash -n "$script"; done
-git diff --check
-```
-
-配置校验需要 Python 与 PyYAML；Emby 和 Node 测试分别需要项目环境中可用的 Python、Node.js。发布工作流会在推送到 `main` 时运行这些检查，通过后再同步白名单内容到公共仓库。
+从仓库根目录运行 `ops/openclash/validate.py` 检查规则格式、provider、策略组和 YAML。提交前确认规则源与目标策略组已声明。只有需要更新运行中的路由器时才显式使用部署脚本的 `--deploy` 参数；常规验证不会访问路由器。
