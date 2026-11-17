@@ -516,7 +516,7 @@ rule-providers:
 
 # 为 Mac mini 2014 建立专属 DNS 隧道（强制通过 AI 策略组解析）
 listeners:
-  - name: macmini-dns
+  - name: macmini2014-dns
     type: tunnel
     port: 5353
     listen: 0.0.0.0
