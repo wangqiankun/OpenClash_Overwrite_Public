@@ -204,6 +204,16 @@ dns:
     "rule-set:Myself_Direct_Domain":
       - "https://dns.alidns.com/dns-query#直接连接"
       - "https://doh.pub/dns-query#直接连接"
+    # AI 域名使用专属 AI 策略组解析，确保 DNS 解析器与数据流量同处于同一节点（杜绝跨区 DNS 泄漏与高延迟）
+    "+.claude.ai":
+      - "https://1.1.1.1/dns-query#AI"
+      - "https://8.8.8.8/dns-query#AI"
+    "+.anthropic.com":
+      - "https://1.1.1.1/dns-query#AI"
+      - "https://8.8.8.8/dns-query#AI"
+    "rule-set:category-ai":
+      - "https://1.1.1.1/dns-query#AI"
+      - "https://8.8.8.8/dns-query#AI"
   # DNS 主要域名配置；支持 UDP、TCP、DoT、DoH、DoQ。
   # 普通解析走代理侧海外 DoH，避免非直连域名暴露到本地运营商递归。
   nameserver:
