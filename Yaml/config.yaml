@@ -392,9 +392,9 @@ rules:
   - DOMAIN,speed.cloudflare.com,网络测试
   # Firebase Analytics 与 Google Tag Manager 上报走谷歌服务，避免被后续拦截规则拒绝。
   - RULE-SET,Myself_Direct_Domain,直接连接
+  - RULE-SET,Myself_Download_Domain,流量节点
   - RULE-SET,Myself_AI_Domain,AI
   - RULE-SET,Myself_Proxy_Domain,国外流量
-  - RULE-SET,Myself_Download_Domain,流量节点
   - RULE-SET,Myself_Emby_Domain,Emby
   - RULE-SET,Myself_IP_Detection,网络测试
   - RULE-SET,Myself_Crypto_Domain,Crypto
