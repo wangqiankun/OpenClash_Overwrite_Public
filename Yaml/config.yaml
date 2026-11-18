@@ -514,15 +514,4 @@ rule-providers:
   FacebookIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs" }
   ChinaIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs" }
 
-# 为 Mac mini 2014 建立专属 DNS 隧道（强制通过 AI 策略组解析）
-listeners:
-  - name: macmini2014-dns
-    type: tunnel
-    port: 5353
-    listen: 0.0.0.0
-    network:
-      - udp
-      - tcp
-    target: 8.8.8.8:53
-    proxy: AI
   # ==================== EOF ====================
