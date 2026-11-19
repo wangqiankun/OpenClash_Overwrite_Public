@@ -335,7 +335,7 @@ proxy-groups: #!replace
 
   # ==================== 媒体服务 ====================
   - { name: Emby,        <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], include-all: true, filter: '(?i)(\x{200d}|\[(Emby|Media)\])', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png" }
-  - { name: YouTube,     <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], include-all: true, filter: '(?i)(\x{200d}|\[(YouTube|Media)\])', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png" }
+  - { name: YouTube,     <<: *SelectPY, proxies: [ 流量节点, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 美国策略, 冷门自选, 全球手动, 直接连接 ], include-all: true, filter: '(?i)(\x{200d}|\x{200c}|\[(YouTube|Media|Traffic|流量)\]|【(YouTube|Media|Traffic|流量)】)', icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png" }
   #  - { name: 奈飞视频,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Netflix.png }
   #  - { name: 国际媒体,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png }
   #  - { name: 新闻媒体,     <<: *SelectUS, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple_News.png }
