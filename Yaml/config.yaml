@@ -163,8 +163,8 @@ dns:
   # 开启 DNS 服务器监听
   listen: 0.0.0.0:7874
   cache-algorithm: arc
-  # 保持 false：返回 AAAA 的空结果，强制局域网客户端的 AI 与外网请求回落 IPv4 (Fake-IP)，杜绝真实 IPv6 暴露
-  ipv6: false
+  # 启用双栈 DNS，配合 fake-ip-range6 支持家庭 IPv6 双栈代理；无 IPv6 网络环境由路由器 UCI ipv6_dns=0 控制关闭
+  ipv6: true
   # 是否开启 DoH 支持 HTTP/3，将并发尝试；强烈不建议和 respect-rules 一起使用
   prefer-h3: false
   # 查询 hosts
@@ -193,17 +193,21 @@ dns:
   proxy-server-nameserver:
     - 119.29.29.29
     - 223.5.5.5
-  # 国内和自定义直连规则在 DNS 阶段使用国内 DoH，避免真实 IP 域名拿到海外 CDN。
+  # 国内、苹果国内 CDN、私有与自定义直连规则在 DNS 阶段使用国内 IP-DoH，避免引导解析开销与海外 CDN 绕行。
   nameserver-policy:
-    "rule-set:China":
-      - "https://dns.alidns.com/dns-query#直接连接"
-      - "https://doh.pub/dns-query#直接连接"
-    "rule-set:Direct":
-      - "https://dns.alidns.com/dns-query#直接连接"
-      - "https://doh.pub/dns-query#直接连接"
-    "rule-set:Myself_Direct_Domain":
-      - "https://dns.alidns.com/dns-query#直接连接"
-      - "https://doh.pub/dns-query#直接连接"
+    "rule-set:China,AppleCN,Private,Myself_Direct_Domain":
+      - "https://223.5.5.5/dns-query#直接连接"
+      - "https://1.12.12.12/dns-query#直接连接"
+    "gh-proxy.991886.xyz":
+      - "https://223.5.5.5/dns-query#直接连接"
+      - "https://1.12.12.12/dns-query#直接连接"
+    # 未命中 hosts 的局域网后缀直接返回 NXDOMAIN，避免内网域名外泄到公网 DNS
+    "+.lan":
+      - "rcode://name_error"
+    "+.local":
+      - "rcode://name_error"
+    "+.localdomain":
+      - "rcode://name_error"
     # AI 域名使用专属 AI 策略组解析，确保 DNS 解析器与数据流量同处于同一节点（杜绝跨区 DNS 泄漏与高延迟）
     "+.claude.ai":
       - "https://1.1.1.1/dns-query#AI"
@@ -220,19 +224,17 @@ dns:
     - "https://1.1.1.1/dns-query#默认代理"
     - "https://8.8.8.8/dns-query#默认代理"
   # 专用于 direct 出口域名解析的 DNS 服务器；如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置。
-  # 命中直连规则时仍使用国内 DNS，保留国内站点和 CDN 解析质量。
+  # 命中直连规则时仍使用国内 IP-DoH，保留国内站点和 CDN 解析质量且无引导解析依赖。
   direct-nameserver:
-    - "https://dns.alidns.com/dns-query#直接连接"
-    - "https://doh.pub/dns-query#直接连接"
-  # direct-nameserver 是否遵循 nameserver-policy，仅当 direct-nameserver 不为空时生效。
-  direct-nameserver-follow-policy: true
+    - "https://223.5.5.5/dns-query#直接连接"
+    - "https://1.12.12.12/dns-query#直接连接"
+  # 直连出口一律走 direct-nameserver，不反向套用 nameserver-policy（避免本机 TUN 直连设备触发代理组 DNS）。
+  direct-nameserver-follow-policy: false
   # 配置不使用 fake-ip 的域名；rule-set 项要求对应 rule-provider 的 behavior 为 domain/classical。
   fake-ip-filter:
-    - rule-set:Direct
     - rule-set:Private
     - rule-set:China
     - rule-set:Myself_Direct_Domain
-    - "+.unice.com"
     - "*.lan"
     - "*.local"
     - +.localdomain
@@ -244,8 +246,7 @@ dns:
     - +.docker.io
     - +.market.xiaomi.com
     - +.push.apple.com
-    - +.tailscale.com
-    - +.991886.xyz
+    - gh-proxy.991886.xyz
 
 
 
@@ -406,7 +407,7 @@ rules:
   # 域名规则
   #  - RULE-SET,LocationDKS,抖快书定位
   - RULE-SET,Private,直接连接
-  - RULE-SET,Direct,直接连接
+  - RULE-SET,China,直接连接
   - RULE-SET,XPTV,直接连接
   - RULE-SET,Download,直接连接
   - RULE-SET,AppleCN,直接连接
@@ -428,7 +429,6 @@ rules:
   - RULE-SET,Google,Google
   - RULE-SET,JetBrains,JetBrains
   - GEOSITE,geolocation-!cn,国外流量
-  - RULE-SET,China,国内流量
 
   # IP规则
   - RULE-SET,AdvertisingIP,广告策略,no-resolve
@@ -460,7 +460,6 @@ rule-providers:
   Tracking: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs" }
   AdvertisingCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomolite.mrs" }
   Advertising: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomo.mrs" }
-  Direct: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs" }
   Private: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs" }
   Download: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Download/Download.list" }
   Speedtest: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/speedtest.mrs" }
