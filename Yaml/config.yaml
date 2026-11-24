@@ -11,7 +11,7 @@ proxy-providers:
     # 保留订阅健康检查，用于刷新 provider 节点可用性；间隔不宜过短，避免数百节点拨测导致连接表/CPU 耗尽。
     health-check:
       enable: true
-      interval: 200
+      interval: 600
       url: https://www.gstatic.com/generate_204
     override:
       skip-cert-verify: true
@@ -66,7 +66,7 @@ geox-url:
   geoip: https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat
   geosite: https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat
   asn: https://testingcf.jsdelivr.net/gh/xishang0128/geoip@release/GeoLite2-ASN.mmdb
-geo-auto-update: true
+geo-auto-update: false
 geo-update-interval: 24
 geodata-mode: true
 
@@ -133,7 +133,7 @@ sniffer:
     - "+.oray.com"
     - "+.sunlogin.net"
     - "+.push.apple.com"
-  skip-src-address:
+  skip-dst-address:
     - 192.168.0.0/16
     - 10.0.0.0/8
     - 172.16.0.0/12
@@ -226,20 +226,12 @@ dns:
     - "https://doh.pub/dns-query#直接连接"
   # direct-nameserver 是否遵循 nameserver-policy，仅当 direct-nameserver 不为空时生效。
   direct-nameserver-follow-policy: true
-  # 当配置 fallback 时，会查询 nameserver 返回的 IP 是否为 CN；不是 CN 时使用 fallback 的 DNS 查询结果。
-  fallback:
-    - "https://1.1.1.1/dns-query#默认代理"
-    - "https://8.8.8.8/dns-query#默认代理"
-  fallback-filter:
-    geoip: true
-    geoip-code: CN
-    ipcidr:
-      - 240.0.0.0/4
   # 配置不使用 fake-ip 的域名；rule-set 项要求对应 rule-provider 的 behavior 为 domain/classical。
   fake-ip-filter:
     - rule-set:Direct
     - rule-set:Private
     - rule-set:China
+    - rule-set:Myself_Direct_Domain
     - "+.unice.com"
     - "*.lan"
     - "*.local"
@@ -289,10 +281,10 @@ FilterAL: &FilterAL '^(?!.*(DIRECT|直接连接|群|邀请|返利|循环|官网|
 # =========================================
 
 # 策略组类型模板 - 定义不同的策略组基础配置
-BaseFB: &BaseFB { type: fallback, interval: 200, lazy: true, url: 'https://www.gstatic.com/generate_204' }
+BaseFB: &BaseFB { type: fallback, interval: 300, lazy: true, url: 'https://www.gstatic.com/generate_204' }
 # BaseUT = Base URL-Test，基础自动测速模板。
 # 翻译：Base URL-Test = 基础 URL 测速；用于自动选择延迟最低的节点。
-BaseUT: &BaseUT { type: url-test, interval: 200, lazy: true, url: 'https://www.gstatic.com/generate_204', hidden: true }
+BaseUT: &BaseUT { type: url-test, interval: 300, tolerance: 80, lazy: true, url: 'https://www.gstatic.com/generate_204', hidden: true }
 
 
 #  一致性哈希。（用不到）
@@ -383,7 +375,7 @@ proxy-groups: #!replace
   - { name: 美国自动LXY,    <<: *BaseUT, include-all: true, filter: *FilterUSLXY, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   - { name: 美国自动Bocchi, <<: *BaseUT, include-all: true, filter: *FilterUSBocchi, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
   # 流量节点按指定优先级故障转移，恢复健康后自动回切至更高优先级节点。
-  - { name: 流量节点自动, <<: *BaseFB, interval: 60, lazy: false, max-failed-times: 1, timeout: 2000, expected-status: 204, include-all: true, filter: *FilterTrafficAuto, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
+  - { name: 流量节点自动, <<: *BaseFB, interval: 300, lazy: true, max-failed-times: 1, timeout: 2000, expected-status: 204, include-all: true, filter: *FilterTrafficAuto, icon: "https://github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png" }
 
 # ==================== 规则路由 ====================
 # 备注：优先走 rules 里从上到下第一个命中的策略。
@@ -393,6 +385,7 @@ rules:
   - SRC-IP-CIDR,192.168.31.11/32,直接连接
   # 测速专用域名分流至网络测试策略组，供端到端体感测速安全隔离
   - DOMAIN,speed.cloudflare.com,网络测试
+  - DOMAIN,proof.ovh.net,网络测试
   # Firebase Analytics 与 Google Tag Manager 上报走谷歌服务，避免被后续拦截规则拒绝。
   - RULE-SET,Myself_Direct_Domain,直接连接
   - RULE-SET,Myself_Download_Domain,流量节点
@@ -468,7 +461,6 @@ rule-providers:
   AdvertisingCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomolite.mrs" }
   Advertising: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomo.mrs" }
   Direct: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs" }
-  LocationDKS: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/LocationDKS.mrs" }
   Private: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs" }
   Download: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Download/Download.list" }
   Speedtest: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/speedtest.mrs" }
@@ -476,20 +468,14 @@ rule-providers:
   TelegramClash: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.list" }
   TelegramLoon: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list" }
   Twitter: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs" }
-  SocialMedia: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-social-media-!cn.mrs" }
-  NewsMedia: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/NewsMedia.mrs" }
   Crypto: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.list" }
-  Netflix: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs" }
   YouTube: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs" }
   XPTV: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/XPTV.mrs" }
   Emby: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Emby/Emby.list" }
-  Streaming: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GlobalMedia/GlobalMedia.list" }
-  # TikTok 源文件为 Clash YAML，需使用 classical/yaml 格式解析。
-  Tiktok: { type: http, behavior: classical, format: yaml, interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/TikTok/TikTok.yaml" }
+  Tiktok: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs" }
   AppleCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs" }
   Apple: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs" }
   Google: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs" }
-  Facebook: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/facebook.mrs" }
   China: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs" }
   # 此规则集仅包含域名；使用 domain behavior 供 DNS 策略与分流共用。
   Myself_Direct_Domain: { type: http, behavior: domain, format: text, interval: 86400, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Direct_Domain.list" }
@@ -501,7 +487,6 @@ rule-providers:
   Myself_Emby_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Emby_Domain.list" }
   category-ai: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
   JetBrains: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Jetbrains/Jetbrains.list" }
-  PayPal: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs" }
 
   # IP规则
   AdvertisingIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Advertising.mrs" }
@@ -511,10 +496,7 @@ rule-providers:
   TelegramIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs" }
   XPTVIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/XPTV.mrs" }
   EmbyIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Emby.mrs" }
-  NetflixIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs" }
-  StreamingIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Streaming.mrs" }
   GoogleIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs" }
-  FacebookIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs" }
   ChinaIP: { <<: *BehaviorIP, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs" }
 
   # ==================== EOF ====================
