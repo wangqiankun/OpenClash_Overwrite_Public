@@ -68,7 +68,8 @@ geox-url:
   asn: https://testingcf.jsdelivr.net/gh/xishang0128/geoip@release/GeoLite2-ASN.mmdb
 geo-auto-update: false
 geo-update-interval: 24
-geodata-mode: true
+# 规则已全面使用 .mrs 规则集，关闭 geodata-mode 避免启动时加载笨重的 geosite.dat / geoip.dat
+geodata-mode: false
 
 # 认证配置
 authentication:
@@ -79,9 +80,8 @@ skip-auth-prefixes:
 
 # 实验性功能
 experimental:
-  # 禁用 quic-go GSO 支持，可能降低 Linux 性能；仅建议在遇到 quic-go 内部 GSO 问题时启用，问题解决后应关闭。
-  # 等价于环境变量 QUIC_GO_DISABLE_GSO=1。
-  quic-go-disable-gso: true
+  # 禁用 quic-go GSO 支持，可能降低 Linux 性能；当前无 GSO 异常，保持关闭以提升 QUIC 吞吐。
+  quic-go-disable-gso: false
   # 启用 TLS SNI 嗅探，对非标准端口 HTTPS 分流有帮助
   sniff-tls-sni: true
 
@@ -137,6 +137,9 @@ sniffer:
     - 192.168.0.0/16
     - 10.0.0.0/8
     - 172.16.0.0/12
+    - 127.0.0.0/8
+    - fc00::/7
+    - fe80::/10
 
 # TUN模式配置（保守增强版）
 tun:
@@ -384,6 +387,8 @@ rules:
   # Mac mini 2014 & ai-box (PVE VM 102) 本机自建全局 TUN 代理，软路由彻底直连放行，避免二次代理
   - SRC-IP-CIDR,192.168.31.10/32,直接连接
   - SRC-IP-CIDR,192.168.31.11/32,直接连接
+  # 指定远程主机 SSH 直连放行（从办公软路由本地自定义规则迁入仓库统一管控）
+  - AND,((IP-CIDR,38.207.171.182/32,no-resolve),(DST-PORT,22),(NETWORK,TCP)),直接连接
   # 测速专用域名分流至网络测试策略组，供端到端体感测速安全隔离
   - DOMAIN,speed.cloudflare.com,网络测试
   - DOMAIN,proof.ovh.net,网络测试
@@ -396,9 +401,8 @@ rules:
   - RULE-SET,Myself_IP_Detection,网络测试
   - RULE-SET,Myself_Crypto_Domain,Crypto
   - RULE-SET,Myself_Direct_IP,直接连接,no-resolve
-  # 拦截规则
+  # 拦截规则（保留轻量高命中广告与追踪规则集，移除 2.2MB 全量超集降低内存占用与误杀）
   - RULE-SET,Tracking,广告策略
-  - RULE-SET,Advertising,广告策略
   - RULE-SET,AdvertisingCN,广告策略
   #  - ; 2026-10-10 测试使用udp，关闭这个这个选项
   #  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((GEOIP,CN)))),REJECT  # 阻止海外 QUIC
@@ -416,8 +420,6 @@ rules:
   - RULE-SET,Speedtest,网络测试
   - RULE-SET,Tiktok,TikTok
   - RULE-SET,Twitter,Twitter
-  - RULE-SET,TelegramClash,Telegram
-  - RULE-SET,TelegramLoon,Telegram
   - RULE-SET,Telegram,Telegram
   #  - RULE-SET,NewsMedia,新闻媒体
   - RULE-SET,Crypto,Crypto
@@ -428,7 +430,7 @@ rules:
   - RULE-SET,Apple,Apple
   - RULE-SET,Google,Google
   - RULE-SET,JetBrains,JetBrains
-  - GEOSITE,geolocation-!cn,国外流量
+  - RULE-SET,GeolocationNotCN,国外流量
 
   # IP规则
   - RULE-SET,AdvertisingIP,广告策略,no-resolve
@@ -440,7 +442,6 @@ rules:
   #  - RULE-SET,NetflixIP,奈飞视频,no-resolve
   #  - RULE-SET,StreamingIP,国际媒体,no-resolve
   - RULE-SET,GoogleIP,Google,no-resolve
-  - GEOIP,!CN,国外流量,no-resolve
   - RULE-SET,ChinaIP,国内流量,no-resolve
 
   # 兜底规则
@@ -459,13 +460,10 @@ rule-providers:
   # 域名规则
   Tracking: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs" }
   AdvertisingCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomolite.mrs" }
-  Advertising: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomo.mrs" }
   Private: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs" }
   Download: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Download/Download.list" }
   Speedtest: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/speedtest.mrs" }
   Telegram: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs" }
-  TelegramClash: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.list" }
-  TelegramLoon: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list" }
   Twitter: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs" }
   Crypto: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.list" }
   YouTube: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs" }
@@ -476,6 +474,7 @@ rule-providers:
   Apple: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs" }
   Google: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs" }
   China: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs" }
+  GeolocationNotCN: { <<: *BehaviorDN, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs" }
   # 此规则集仅包含域名；使用 domain behavior 供 DNS 策略与分流共用。
   Myself_Direct_Domain: { type: http, behavior: domain, format: text, interval: 86400, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Direct_Domain.list" }
   Myself_Proxy_Domain: { <<: *BehaviorClassicalText, url: "https://gh-proxy.991886.xyz/https://raw.githubusercontent.com/wangqiankun/OpenClash_Overwrite_Public/refs/heads/main/Rules/Myself_Proxy_Domain.list" }
