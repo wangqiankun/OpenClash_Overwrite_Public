@@ -55,4 +55,12 @@ IP-CIDR6,2607:6bc0::/32,no-resolve
 IP-ASN,399358,no-resolve
 
 
+# Antigravity API / CLI 域名
 DOMAIN-SUFFIX,antigravity.google.com
+DOMAIN-SUFFIX,antigravity.google
+DOMAIN,antigravity-cli-auto-updater-974169037036.us-central1.run.app
+DOMAIN,daily-cloudcode-pa.googleapis.com
+DOMAIN,cloudcode-pa.googleapis.com
+DOMAIN,jetski-webchannel.googleapis.com
+DOMAIN,aicode.googleapis.com
+DOMAIN,businessaicode.googleapis.com
