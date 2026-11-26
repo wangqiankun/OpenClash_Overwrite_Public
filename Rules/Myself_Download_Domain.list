@@ -77,6 +77,8 @@ DOMAIN,downloads.claude.ai
 DOMAIN,downloads.cursor.com
 # ChatGPT AI 下载
 DOMAIN,persistent.oaistatic.com
+# Antigravity CLI 更新下载
+DOMAIN,antigravity-cli-auto-updater-974169037036.us-central1.run.app
 
 
 # Debian iso 下载

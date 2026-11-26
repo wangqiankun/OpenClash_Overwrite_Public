@@ -1,14 +1,14 @@
 {
   "version": 1,
-  "source_revision": "c47170d6e88adc551eb076c073f45d5407e23d79",
+  "source_revision": "dfbda1c25f4591edc6ba10975842f384441318b2",
   "files": {
     "Yaml/config.yaml": "89c40eba4a95c886db43d9a04b0ac6e1298bbb6953c042df9317ef78db566a9a",
     "Overwrite/overwrite.conf": "9b9d59967a38f5db22c6b268e8332b50196b7bd5fbfa709758673db514fe12e8",
-    "Rules/Myself_AI_Domain.list": "0e7c66ad6228c37358e3129101b526ec4521b3252b40d4c21104f2e81f201165",
+    "Rules/Myself_AI_Domain.list": "dfa1ae420ba9443561afb0ee8300d9e08d3ea501a5e983814f080d34ac6ac079",
     "Rules/Myself_Crypto_Domain.list": "3ea93bfe3791fc3ebd5adb902ea97801b1908de3d236a0b3a81603ba92c80a82",
     "Rules/Myself_Direct_Domain.list": "eaf5c1842a4e526e6aeb1cfd10032d428a3e806cccbb694cc0ca00fe10e0ce85",
     "Rules/Myself_Direct_IP.list": "422e27bb26f4e3c905f63145116d2eb2a76991694fa06accd227ac8005fbcedf",
-    "Rules/Myself_Download_Domain.list": "0fdc07576563bb99beed0b0fccc6c97b3893b1d3805e615dff3b4179037e3b09",
+    "Rules/Myself_Download_Domain.list": "db6f210b418127589e31fb05fa550fcd07f3ea20d2b15fa5d3b5401fa7d9d574",
     "Rules/Myself_Emby_Domain.list": "a67305a527a706998d3b9336567df5aa5fd1d583b685273f9f46a06b3383663b",
     "Rules/Myself_IP_Detection.list": "f02bce8b0c91d74dcc208cf12308fa76f09ed3460ae0b1a4d4f367f1768644bd",
     "Rules/Myself_Proxy_Domain.list": "2b90742b9ab78b4eb2d9522c978307cace75d23e31d1118cbc53608a5515f23e",
